@@ -1,0 +1,1366 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Restaurante Morros de Pichilemu</title>
+
+  <style>
+    :root {
+      --color-principal: #123c4a;
+      --color-secundario: #d6a85f;
+      --color-fondo: #f7f5f0;
+      --color-texto: #202020;
+      --color-blanco: #ffffff;
+      --color-borde: #dddddd;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: var(--color-fondo);
+      color: var(--color-texto);
+    }
+
+    header {
+      background: var(--color-principal);
+      color: white;
+      text-align: center;
+      padding: 35px 20px 30px;
+    }
+
+    .logo {
+      max-width: 180px;
+      max-height: 100px;
+      object-fit: contain;
+      margin-bottom: 15px;
+    }
+
+    .logo-placeholder {
+      font-size: 28px;
+      font-weight: bold;
+      letter-spacing: 1px;
+    }
+
+    header h1 {
+      margin: 5px 0;
+      font-size: 30px;
+    }
+
+    header p {
+      margin: 8px 0 0;
+      opacity: 0.9;
+    }
+
+    nav {
+      background: white;
+      padding: 12px;
+      text-align: center;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      border-bottom: 1px solid var(--color-borde);
+    }
+
+    nav a {
+      display: inline-block;
+      margin: 5px 8px;
+      padding: 10px 14px;
+      text-decoration: none;
+      color: var(--color-principal);
+      font-weight: bold;
+      border-radius: 8px;
+    }
+
+    nav a:hover {
+      background: #eeeeee;
+    }
+
+    .contenedor {
+      width: 92%;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    section {
+      padding: 45px 0;
+    }
+
+    .titulo-seccion {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    .titulo-seccion h2 {
+      margin-bottom: 8px;
+      color: var(--color-principal);
+      font-size: 28px;
+    }
+
+    .titulo-seccion p {
+      margin: 0;
+      color: #666;
+    }
+
+    /* BOTONES */
+
+    .botones-inicio {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 12px;
+      margin-top: 25px;
+    }
+
+    .boton {
+      display: inline-block;
+      padding: 14px 20px;
+      border-radius: 10px;
+      text-decoration: none;
+      border: none;
+      cursor: pointer;
+      font-size: 16px;
+      font-weight: bold;
+      transition: 0.2s;
+    }
+
+    .boton-principal {
+      background: var(--color-secundario);
+      color: #111;
+    }
+
+    .boton-secundario {
+      background: white;
+      color: var(--color-principal);
+      border: 2px solid white;
+    }
+
+    .boton-whatsapp {
+      background: #25D366;
+      color: white;
+    }
+
+    .boton:hover {
+      transform: translateY(-1px);
+      opacity: 0.9;
+    }
+
+    /* CARTA */
+
+    .categoria {
+      margin-bottom: 35px;
+    }
+
+    .categoria h3 {
+      color: var(--color-principal);
+      border-bottom: 2px solid var(--color-secundario);
+      padding-bottom: 8px;
+      margin-bottom: 0;
+      font-size: 22px;
+    }
+
+    .plato {
+      display: flex;
+      justify-content: space-between;
+      gap: 20px;
+      padding: 16px 5px;
+      border-bottom: 1px solid var(--color-borde);
+    }
+
+    .plato-info {
+      flex: 1;
+    }
+
+    .plato-nombre {
+      font-weight: bold;
+      font-size: 17px;
+    }
+
+    .plato-descripcion {
+      margin-top: 5px;
+      color: #666;
+      font-size: 14px;
+    }
+
+    .plato-precio {
+      font-weight: bold;
+      white-space: nowrap;
+      color: var(--color-principal);
+      font-size: 17px;
+    }
+
+    /* RESERVAS */
+
+    .formulario {
+      background: white;
+      padding: 25px;
+      border-radius: 14px;
+      border: 1px solid var(--color-borde);
+    }
+
+    .campo {
+      margin-bottom: 17px;
+    }
+
+    .campo label {
+      display: block;
+      margin-bottom: 7px;
+      font-weight: bold;
+    }
+
+    .campo input,
+    .campo select,
+    .campo textarea {
+      width: 100%;
+      padding: 13px;
+      border: 1px solid #cccccc;
+      border-radius: 8px;
+      font-size: 16px;
+      font-family: inherit;
+      background: white;
+    }
+
+    .campo textarea {
+      min-height: 100px;
+      resize: vertical;
+    }
+
+    .mensaje {
+      margin-top: 15px;
+      padding: 12px;
+      border-radius: 8px;
+      display: none;
+    }
+
+    .mensaje.exito {
+      display: block;
+      background: #e7f7ec;
+      color: #176b31;
+    }
+
+    .mensaje.error {
+      display: block;
+      background: #fdeaea;
+      color: #9b2020;
+    }
+
+    /* INFORMACIÓN */
+
+    .info {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 15px;
+    }
+
+    .info-box {
+      background: white;
+      padding: 20px;
+      border-radius: 12px;
+      border: 1px solid var(--color-borde);
+      text-align: center;
+    }
+
+    .info-box h3 {
+      margin-top: 0;
+      color: var(--color-principal);
+    }
+
+    .info-box p {
+      margin-bottom: 0;
+      line-height: 1.5;
+    }
+
+    footer {
+      background: var(--color-principal);
+      color: white;
+      text-align: center;
+      padding: 30px 20px;
+      margin-top: 20px;
+    }
+
+    @media (max-width: 650px) {
+
+      header h1 {
+        font-size: 25px;
+      }
+
+      nav {
+        overflow-x: auto;
+        white-space: nowrap;
+      }
+
+      .info {
+        grid-template-columns: 1fr;
+      }
+
+      .plato {
+        gap: 10px;
+      }
+
+      .boton {
+        width: 100%;
+        text-align: center;
+      }
+
+      .botones-inicio {
+        flex-direction: column;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- =====================================================
+       CONFIGURACIÓN
+       AQUÍ PODREMOS CAMBIAR LOS DATOS DE LA PÁGINA
+       ===================================================== -->
+
+  <script>
+    const CONFIG = {
+
+      // Nombre del restaurante
+      nombre: "Restaurante Morros de Pichilemu",
+
+      // Frase principal
+      descripcion: "Sabores del mar en Pichilemu",
+
+      // WhatsApp.
+      // IMPORTANTE: colocar solamente números.
+      // Ejemplo Chile: 56912345678
+      whatsapp: "569XXXXXXXX",
+
+      // Logo.
+      // Más adelante podemos subir el logo al repositorio
+      // y colocar aquí el nombre del archivo.
+      logo: "",
+
+      // Fondo.
+      // Puede quedar vacío para usar el fondo normal.
+      // Más adelante podemos colocar una imagen.
+      fondo: "",
+
+      // Dirección
+      direccion: "Pichilemu, Chile",
+
+      // Horarios
+      horarios: "Consultar horarios",
+
+      // Instagram
+      instagram: "",
+
+      // Colores
+      colorPrincipal: "#123c4a",
+      colorSecundario: "#d6a85f",
+      colorFondo: "#f7f5f0",
+
+      /*
+        CARTA
+
+        Para agregar un plato se copia uno de estos bloques.
+
+        precio debe escribirse solamente como número.
+        Ejemplo:
+        precio: 13900
+      */
+
+      carta: [
+
+        {
+          categoria: "Entradas",
+          platos: [
+            {
+              nombre: "Ceviche de Reineta",
+              descripcion: "",
+              precio: 0
+            },
+            {
+              nombre: "Empanadas de Mariscos",
+              descripcion: "",
+              precio: 0
+            }
+          ]
+        },
+
+        {
+          categoria: "Platos principales",
+          platos: [
+            {
+              nombre: "Reineta",
+              descripcion: "",
+              precio: 0
+            },
+            {
+              nombre: "Paila Marina",
+              descripcion: "",
+              precio: 13900
+            }
+          ]
+        },
+
+        {
+          categoria: "Para compartir",
+          platos: [
+            {
+              nombre: "Tabla de Mariscos",
+              descripcion: "",
+              precio: 0
+            }
+          ]
+        }
+
+      ]
+    };
+
+
+    /* =====================================================
+       SUPABASE
+       =====================================================
+
+       AQUÍ COLOCAREMOS LOS DATOS DE SUPABASE CUANDO
+       CONECTEMOS EL SISTEMA DE RESERVAS.
+
+       NO PONGAS TODAVÍA DATOS QUE NO TENGAMOS CONFIRMADOS.
+    */
+
+    const SUPABASE_URL = "";
+    const SUPABASE_ANON_KEY = "";
+  </script>
+
+
+  <!-- ENCABEZADO -->
+
+  <header>
+
+    <div id="logoContainer"></div>
+
+    <h1 id="nombreRestaurante"></h1>
+
+    <p id="descripcionRestaurante"></p>
+
+    <div class="botones-inicio">
+
+      <a href="#carta" class="boton boton-principal">
+        Ver carta
+      </a>
+
+      <a href="#reservas" class="boton boton-secundario">
+        Reservar mesa
+      </a>
+
+      <a
+        id="botonWhatsAppInicio"
+        class="boton boton-whatsapp"
+        href="#"
+        target="_blank"
+      >
+        Reservar por WhatsApp
+      </a>
+
+    </div>
+
+  </header>
+
+
+  <!-- MENÚ -->
+
+  <nav>
+
+    <a href="#carta">Carta</a>
+
+    <a href="#reservas">Reservas</a>
+
+    <a href="#informacion">Información</a>
+
+  </nav>
+
+
+  <main class="contenedor">
+
+
+    <!-- CARTA -->
+
+    <section id="carta">
+
+      <div class="titulo-seccion">
+
+        <h2>Nuestra carta</h2>
+
+        <p>
+          Consulte nuestros platos y precios.
+        </p>
+
+      </div>
+
+      <div id="cartaContainer"></div>
+
+    </section>
+
+
+    <!-- RESERVAS -->
+
+    <section id="reservas">
+
+      <div class="titulo-seccion">
+
+        <h2>Reserva su mesa</h2>
+
+        <p>
+          Complete sus datos y solicite su reserva.
+        </p>
+
+      </div>
+
+
+      <div class="formulario">
+
+        <form id="formReserva">
+
+          <div class="campo">
+
+            <label for="nombre">
+              Nombre
+            </label>
+
+            <input
+              type="text"
+              id="nombre"
+              required
+              autocomplete="name"
+              placeholder="Ingrese su nombre"
+            >
+
+          </div>
+
+
+          <div class="campo">
+
+            <label for="telefono">
+              Teléfono
+            </label>
+
+            <input
+              type="tel"
+              id="telefono"
+              required
+              autocomplete="tel"
+              placeholder="Ingrese su teléfono"
+            >
+
+          </div>
+
+
+          <div class="campo">
+
+            <label for="personas">
+              Cantidad de personas
+            </label>
+
+            <select id="personas" required>
+
+              <option value="">
+                Seleccione
+              </option>
+
+              <option value="1">
+                1 persona
+              </option>
+
+              <option value="2">
+                2 personas
+              </option>
+
+              <option value="3">
+                3 personas
+              </option>
+
+              <option value="4">
+                4 personas
+              </option>
+
+              <option value="5">
+                5 personas
+              </option>
+
+              <option value="6">
+                6 personas
+              </option>
+
+              <option value="7">
+                7 personas
+              </option>
+
+              <option value="8">
+                8 personas
+              </option>
+
+              <option value="9">
+                9 personas
+              </option>
+
+              <option value="10">
+                10 personas
+              </option>
+
+              <option value="11">
+                11 personas
+              </option>
+
+              <option value="12">
+                12 personas
+              </option>
+
+              <option value="13+">
+                13 o más personas
+              </option>
+
+            </select>
+
+          </div>
+
+
+          <div class="campo">
+
+            <label for="fecha">
+              Fecha
+            </label>
+
+            <input
+              type="date"
+              id="fecha"
+              required
+            >
+
+          </div>
+
+
+          <div class="campo">
+
+            <label for="hora">
+              Hora
+            </label>
+
+            <input
+              type="time"
+              id="hora"
+              required
+            >
+
+          </div>
+
+
+          <div class="campo">
+
+            <label for="observaciones">
+              Observaciones
+            </label>
+
+            <textarea
+              id="observaciones"
+              placeholder="Alguna solicitud especial, cumpleaños, etc."
+            ></textarea>
+
+          </div>
+
+
+          <button
+            type="submit"
+            class="boton boton-principal"
+            style="width:100%;"
+          >
+            Solicitar reserva
+          </button>
+
+
+          <div
+            id="mensajeReserva"
+            class="mensaje"
+            aria-live="polite"
+          ></div>
+
+
+          <div
+            style="text-align:center; margin-top:20px;"
+          >
+
+            <p>
+              También puede reservar directamente por WhatsApp:
+            </p>
+
+            <a
+              id="botonWhatsAppReserva"
+              class="boton boton-whatsapp"
+              href="#"
+              target="_blank"
+            >
+              Reservar por WhatsApp
+            </a>
+
+          </div>
+
+        </form>
+
+      </div>
+
+    </section>
+
+
+    <!-- INFORMACIÓN -->
+
+    <section id="informacion">
+
+      <div class="titulo-seccion">
+
+        <h2>Información</h2>
+
+      </div>
+
+
+      <div class="info">
+
+        <div class="info-box">
+
+          <h3>📍 Ubicación</h3>
+
+          <p id="direccion"></p>
+
+        </div>
+
+
+        <div class="info-box">
+
+          <h3>🕐 Horarios</h3>
+
+          <p id="horarios"></p>
+
+        </div>
+
+
+        <div class="info-box">
+
+          <h3>📱 Contacto</h3>
+
+          <p>
+            Reserva directamente por WhatsApp.
+          </p>
+
+          <a
+            id="botonWhatsAppInfo"
+            class="boton boton-whatsapp"
+            href="#"
+            target="_blank"
+          >
+            WhatsApp
+          </a>
+
+        </div>
+
+      </div>
+
+    </section>
+
+  </main>
+
+
+  <footer>
+
+    <strong id="footerNombre"></strong>
+
+    <p>
+      © <span id="anio"></span> Todos los derechos reservados.
+    </p>
+
+  </footer>
+
+
+  <script>
+
+    /* =====================================================
+       INICIALIZACIÓN
+       ===================================================== */
+
+    document.documentElement.style.setProperty(
+      "--color-principal",
+      CONFIG.colorPrincipal
+    );
+
+    document.documentElement.style.setProperty(
+      "--color-secundario",
+      CONFIG.colorSecundario
+    );
+
+    document.documentElement.style.setProperty(
+      "--color-fondo",
+      CONFIG.colorFondo
+    );
+
+
+    /* FONDO */
+
+    if (CONFIG.fondo) {
+
+      document.body.style.backgroundImage =
+        `url("${CONFIG.fondo}")`;
+
+      document.body.style.backgroundSize = "cover";
+
+      document.body.style.backgroundAttachment = "fixed";
+
+    }
+
+
+    /* LOGO */
+
+    const logoContainer =
+      document.getElementById("logoContainer");
+
+    if (CONFIG.logo) {
+
+      const imagen = document.createElement("img");
+
+      imagen.src = CONFIG.logo;
+
+      imagen.alt = "Logo de " + CONFIG.nombre;
+
+      imagen.className = "logo";
+
+      logoContainer.appendChild(imagen);
+
+    }
+
+
+    /* DATOS GENERALES */
+
+    document.getElementById(
+      "nombreRestaurante"
+    ).textContent = CONFIG.nombre;
+
+    document.getElementById(
+      "descripcionRestaurante"
+    ).textContent = CONFIG.descripcion;
+
+    document.getElementById(
+      "direccion"
+    ).textContent = CONFIG.direccion;
+
+    document.getElementById(
+      "horarios"
+    ).textContent = CONFIG.horarios;
+
+    document.getElementById(
+      "footerNombre"
+    ).textContent = CONFIG.nombre;
+
+    document.getElementById(
+      "anio"
+    ).textContent = new Date().getFullYear();
+
+
+    /* =====================================================
+       WHATSAPP
+       ===================================================== */
+
+    function crearLinkWhatsApp(mensaje) {
+
+      if (!CONFIG.whatsapp) {
+        return "#";
+      }
+
+      return (
+        "https://wa.me/" +
+        CONFIG.whatsapp +
+        "?text=" +
+        encodeURIComponent(mensaje)
+      );
+
+    }
+
+
+    function mensajeWhatsApp() {
+
+      return (
+        "Hola, quiero hacer una reserva en " +
+        CONFIG.nombre +
+        "."
+      );
+
+    }
+
+
+    const linksWhatsApp = [
+
+      document.getElementById(
+        "botonWhatsAppInicio"
+      ),
+
+      document.getElementById(
+        "botonWhatsAppReserva"
+      ),
+
+      document.getElementById(
+        "botonWhatsAppInfo"
+      )
+
+    ];
+
+
+    linksWhatsApp.forEach(function(link) {
+
+      link.href =
+        crearLinkWhatsApp(
+          mensajeWhatsApp()
+        );
+
+    });
+
+
+    /* =====================================================
+       CARTA DINÁMICA
+       ===================================================== */
+
+    const cartaContainer =
+      document.getElementById(
+        "cartaContainer"
+      );
+
+
+    function formatearPrecio(precio) {
+
+      if (!precio || precio <= 0) {
+
+        return "Consultar";
+
+      }
+
+      return "$" +
+        Number(precio).toLocaleString(
+          "es-CL"
+        );
+
+    }
+
+
+    CONFIG.carta.forEach(function(categoria) {
+
+      const categoriaDiv =
+        document.createElement("div");
+
+      categoriaDiv.className = "categoria";
+
+
+      const titulo =
+        document.createElement("h3");
+
+      titulo.textContent =
+        categoria.categoria;
+
+
+      categoriaDiv.appendChild(titulo);
+
+
+      categoria.platos.forEach(function(plato) {
+
+        const platoDiv =
+          document.createElement("div");
+
+        platoDiv.className = "plato";
+
+
+        const info =
+          document.createElement("div");
+
+        info.className = "plato-info";
+
+
+        const nombre =
+          document.createElement("div");
+
+        nombre.className =
+          "plato-nombre";
+
+        nombre.textContent =
+          plato.nombre;
+
+
+        info.appendChild(nombre);
+
+
+        if (plato.descripcion) {
+
+          const descripcion =
+            document.createElement("div");
+
+          descripcion.className =
+            "plato-descripcion";
+
+          descripcion.textContent =
+            plato.descripcion;
+
+          info.appendChild(descripcion);
+
+        }
+
+
+        const precio =
+          document.createElement("div");
+
+        precio.className =
+          "plato-precio";
+
+        precio.textContent =
+          formatearPrecio(
+            plato.precio
+          );
+
+
+        platoDiv.appendChild(info);
+
+        platoDiv.appendChild(precio);
+
+        categoriaDiv.appendChild(platoDiv);
+
+      });
+
+
+      cartaContainer.appendChild(
+        categoriaDiv
+      );
+
+    });
+
+
+    /* =====================================================
+       FORMULARIO DE RESERVA
+       ===================================================== */
+
+    const form =
+      document.getElementById(
+        "formReserva"
+      );
+
+    const mensaje =
+      document.getElementById(
+        "mensajeReserva"
+      );
+
+
+    function mostrarMensaje(
+      texto,
+      tipo
+    ) {
+
+      mensaje.textContent = texto;
+
+      mensaje.className =
+        "mensaje " + tipo;
+
+    }
+
+
+    function obtenerDatosReserva() {
+
+      return {
+
+        nombre:
+          document.getElementById(
+            "nombre"
+          ).value.trim(),
+
+        telefono:
+          document.getElementById(
+            "telefono"
+          ).value.trim(),
+
+        personas:
+          document.getElementById(
+            "personas"
+          ).value,
+
+        fecha:
+          document.getElementById(
+            "fecha"
+          ).value,
+
+        hora:
+          document.getElementById(
+            "hora"
+          ).value,
+
+        observaciones:
+          document.getElementById(
+            "observaciones"
+          ).value.trim()
+
+      };
+
+    }
+
+
+    function mensajeReservaWhatsApp(
+      datos
+    ) {
+
+      let texto =
+        "Hola, quiero reservar una mesa en " +
+        CONFIG.nombre +
+        ".\n\n";
+
+      texto +=
+        "Nombre: " +
+        datos.nombre +
+        "\n";
+
+      texto +=
+        "Teléfono: " +
+        datos.telefono +
+        "\n";
+
+      texto +=
+        "Personas: " +
+        datos.personas +
+        "\n";
+
+      texto +=
+        "Fecha: " +
+        datos.fecha +
+        "\n";
+
+      texto +=
+        "Hora: " +
+        datos.hora +
+        "\n";
+
+
+      if (datos.observaciones) {
+
+        texto +=
+          "Observaciones: " +
+          datos.observaciones +
+          "\n";
+
+      }
+
+
+      return texto;
+
+    }
+
+
+    form.addEventListener(
+      "submit",
+      async function(event) {
+
+        event.preventDefault();
+
+
+        const datos =
+          obtenerDatosReserva();
+
+
+        if (
+          !datos.nombre ||
+          !datos.telefono ||
+          !datos.personas ||
+          !datos.fecha ||
+          !datos.hora
+        ) {
+
+          mostrarMensaje(
+            "Por favor complete todos los campos obligatorios.",
+            "error"
+          );
+
+          return;
+
+        }
+
+
+        /*
+          SI SUPABASE TODAVÍA NO ESTÁ CONFIGURADO,
+          MOSTRAMOS LA OPCIÓN DE WHATSAPP.
+        */
+
+        if (
+          !SUPABASE_URL ||
+          !SUPABASE_ANON_KEY
+        ) {
+
+          mostrarMensaje(
+            "La reserva online todavía está en configuración. Puede enviarla directamente por WhatsApp.",
+            "error"
+          );
+
+
+          const link =
+            crearLinkWhatsApp(
+              mensajeReservaWhatsApp(
+                datos
+              )
+            );
+
+
+          window.open(
+            link,
+            "_blank"
+          );
+
+          return;
+
+        }
+
+
+        /*
+          AQUÍ CONECTAREMOS LA RESERVA
+          CON SUPABASE.
+
+          Lo dejamos preparado para conectar
+          la tabla de reservas.
+        */
+
+        try {
+
+          const respuesta =
+            await fetch(
+              SUPABASE_URL +
+              "/rest/v1/reservas",
+              {
+
+                method: "POST",
+
+                headers: {
+
+                  "Content-Type":
+                    "application/json",
+
+                  "apikey":
+                    SUPABASE_ANON_KEY,
+
+                  "Authorization":
+                    "Bearer " +
+                    SUPABASE_ANON_KEY,
+
+                  "Prefer":
+                    "return=minimal"
+
+                },
+
+                body:
+                  JSON.stringify({
+
+                    nombre:
+                      datos.nombre,
+
+                    telefono:
+                      datos.telefono,
+
+                    personas:
+                      datos.personas,
+
+                    fecha:
+                      datos.fecha,
+
+                    hora:
+                      datos.hora,
+
+                    observaciones:
+                      datos.observaciones
+
+                  })
+
+              }
+            );
+
+
+          if (!respuesta.ok) {
+
+            throw new Error(
+              "No se pudo guardar la reserva."
+            );
+
+          }
+
+
+          mostrarMensaje(
+            "Su solicitud de reserva fue enviada correctamente.",
+            "exito"
+          );
+
+
+          /*
+            También dejamos disponible
+            el envío por WhatsApp.
+          */
+
+          const link =
+            crearLinkWhatsApp(
+              mensajeReservaWhatsApp(
+                datos
+              )
+            );
+
+
+          setTimeout(
+            function() {
+
+              window.open(
+                link,
+                "_blank"
+              );
+
+            },
+            500
+          );
+
+
+          form.reset();
+
+
+        } catch (error) {
+
+          console.error(error);
+
+
+          mostrarMensaje(
+            "No fue posible guardar la reserva. Puede enviarla directamente por WhatsApp.",
+            "error"
+          );
+
+
+          const link =
+            crearLinkWhatsApp(
+              mensajeReservaWhatsApp(
+                datos
+              )
+            );
+
+
+          setTimeout(
+            function() {
+
+              window.open(
+                link,
+                "_blank"
+              );
+
+            },
+            500
+          );
+
+        }
+
+      }
+    );
+
+  </script>
+
+</body>
+</html>
