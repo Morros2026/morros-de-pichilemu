@@ -15,11 +15,58 @@ main{max-width:1200px;margin:auto;padding:0 270px 60px 18px}.hero{min-height:510
 .info{position:fixed;right:18px;top:112px;width:245px;display:flex;flex-direction:column;gap:12px;margin:0;z-index:25}.info .card{padding:16px 16px 15px;position:relative;overflow:hidden;background:rgba(255,255,255,.97);transition:transform .2s ease,box-shadow .2s ease,border-color .2s ease}.info .card:before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:linear-gradient(180deg,var(--teal),var(--gold));opacity:.85}.info .card:hover{transform:translateY(-3px);box-shadow:0 14px 30px rgba(8,63,67,.13);border-color:#cfe2df}.info .card b{display:flex;align-items:center;gap:8px;font-size:1rem;margin-bottom:8px}.info .card b:first-letter{font-size:1.15rem}.info .card a{color:var(--teal);font-weight:900;text-decoration:none;transition:color .18s ease}.info .card a:hover{color:var(--dark)}.info .actions{gap:7px}.info .actions .btn{padding:9px 12px;font-size:.86rem;transition:transform .18s ease,box-shadow .18s ease}.info .actions .btn:hover{transform:translateY(-2px);box-shadow:0 8px 18px rgba(8,63,67,.12)}
 h2{color:var(--dark);margin:42px 0 14px;text-align:center;font-size:clamp(1.7rem,4vw,2.4rem)}.section-kicker{text-align:center;color:var(--gold);font-weight:800;letter-spacing:1.5px;font-size:.8rem}.categories{display:flex;gap:8px;overflow:auto;padding:8px 0 15px;position:sticky;top:73px;background:rgba(247,250,249,.94);backdrop-filter:blur(7px);z-index:20}.categories a{white-space:nowrap;text-decoration:none;border:1px solid var(--line);background:#fff;color:var(--dark);padding:9px 13px;border-radius:999px;font-weight:800}.categories a:hover{background:#e8f5f5;transform:translateY(-1px)}.categories a.active{background:var(--teal);color:#fff;border-color:var(--teal);box-shadow:0 6px 16px rgba(13,159,159,.18)}.categories a{transition:background .2s ease,color .2s ease,border-color .2s ease,transform .2s ease;scroll-snap-align:start}.categories{scroll-snap-type:x proximity;scrollbar-width:thin}
 .menu-section{scroll-margin-top:135px;margin-top:30px}.menu-section h2{text-align:left;margin-top:0;margin-bottom:14px;font-size:1.65rem;border-left:5px solid var(--gold);padding-left:12px}.menu-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}.dish{background:rgba(255,255,255,.98);border:1px solid var(--line);border-radius:20px;padding:0;display:grid;grid-template-columns:170px 1fr;gap:0;align-items:stretch;overflow:hidden;box-shadow:0 8px 24px rgba(8,63,67,.07);transition:transform .28s ease,box-shadow .28s ease,border-color .28s ease;animation:dishIn .55s ease both}.dish:hover{transform:translateY(-5px);box-shadow:0 18px 36px rgba(8,63,67,.14);border-color:#cfe2df}.dish-photo{width:170px;height:100%;min-height:170px;align-self:stretch;border-radius:20px 0 0 20px;object-fit:cover;object-position:center;background:#eef4f3;display:block;transition:transform .45s ease,filter .35s ease}.dish:hover .dish-photo{transform:scale(1.045);filter:saturate(1.04)}.dish-main{padding:18px 16px 16px;display:flex;flex-direction:column;justify-content:center;min-width:0}.dish-name{font-weight:900;color:var(--dark);font-size:1.08rem;line-height:1.25}.dish-desc{font-size:.9rem;color:var(--muted);margin-top:7px;line-height:1.45}.price{font-weight:900;color:var(--teal);white-space:nowrap;font-size:1.08rem;margin-top:10px}.dish:focus-within{transform:translateY(-3px);box-shadow:0 14px 30px rgba(8,63,67,.12)}@keyframes dishIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}.dish-main{min-width:0}.dish-name{font-weight:900;color:var(--dark);font-size:1.02rem}.dish-desc{font-size:.9rem;color:var(--muted);margin-top:5px;line-height:1.4}.price{font-weight:900;color:var(--teal);white-space:nowrap;font-size:1.02rem}.sold{display:inline-block;color:#a33;background:#fff0f0;border-radius:999px;padding:4px 8px;font-size:.75rem;font-weight:900;margin-top:6px}
-.form{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}.form input,.form select,.form textarea{width:100%;padding:12px;border:1px solid var(--line);border-radius:10px;font:inherit;background:#fff}.form textarea{min-height:100px;resize:vertical}.full{grid-column:1/-1}.reserve-box{max-width:900px;margin:0 auto}.wifi{display:flex;gap:8px;align-items:center;justify-content:center;flex-wrap:wrap}
+#reservar{scroll-margin-top:90px}.reserve-intro{max-width:760px;margin:0 auto 18px;text-align:center;color:var(--muted);line-height:1.6}.reserve-card{max-width:920px;margin:0 auto;border-radius:24px;padding:24px;background:linear-gradient(180deg,#ffffff,#f8fbfa);border:1px solid var(--line);box-shadow:0 14px 35px rgba(8,63,67,.10)}.form{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}.form label{display:block;font-weight:800;color:var(--dark);font-size:.92rem}.form input,.form select,.form textarea{width:100%;margin-top:7px;padding:13px 14px;border:1px solid var(--line);border-radius:13px;font:inherit;background:#fff;box-sizing:border-box;transition:border-color .2s,box-shadow .2s,transform .2s}.form input:focus,.form select:focus,.form textarea:focus{outline:none;border-color:var(--teal);box-shadow:0 0 0 3px rgba(8,63,67,.10)}.form textarea{min-height:110px;resize:vertical}.full{grid-column:1/-1}.reserve-submit{width:100%;justify-content:center;font-size:1rem;padding:14px 18px;border-radius:14px}.reserve-note{text-align:center;font-size:.82rem;color:var(--muted);margin-top:10px}.reserve-box{max-width:900px;margin:0 auto}.wifi{display:flex;gap:8px;align-items:center;justify-content:center;flex-wrap:wrap}
 footer{background:var(--dark);color:#fff;padding:32px 18px;text-align:center;margin:0 -18px}
 @media(max-width:900px){main{padding:0 18px 60px}.info{position:relative;right:auto;top:auto;width:auto;display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin:26px 0 34px}.info .card:hover{transform:none}.menu-grid{grid-template-columns:1fr}.dish{grid-template-columns:145px 1fr}.dish-photo{width:145px;height:100%;min-height:145px;object-fit:cover;border-radius:15px 0 0 15px}}
 @media(prefers-reduced-motion:reduce){.dish,.dish-photo,.info .card,.info .actions .btn{animation:none!important;transition:none!important}.dish:hover,.info .card:hover,.info .actions .btn:hover{transform:none!important}}
 @media(max-width:650px){.brand span{display:none}.actions .btn{padding:9px 11px;font-size:.82rem}.hero{min-height:470px}.hero-logo{width:220px}.info,.form{grid-template-columns:1fr}.categories{top:67px}.dish{grid-template-columns:105px 1fr;gap:0}.dish-photo{width:105px;height:100%;min-height:125px;object-fit:cover;border-radius:14px 0 0 14px}.dish-main{padding:14px 13px}.price{margin-top:10px}.dish-name{font-size:1rem}.dish-desc{font-size:.86rem}.menu-section h2{font-size:1.4rem}}
+
+/* Mejoras visuales de la sección de reservas */
+#reservas {
+  margin-top: 28px;
+}
+#reservas .form {
+  background: rgba(255,255,255,.97);
+  border-radius: 22px;
+  padding: 24px;
+  box-shadow: 0 14px 35px rgba(0,0,0,.10);
+}
+#reservas h2 {
+  font-size: clamp(1.5rem, 3vw, 2rem);
+  margin-bottom: 8px;
+}
+#reservas .muted {
+  margin-bottom: 20px;
+}
+#reservas input,
+#reservas select,
+#reservas textarea {
+  min-height: 48px;
+  border-radius: 12px;
+  font-size: 1rem;
+}
+#reservas textarea {
+  min-height: 105px;
+}
+#reservas button[type="submit"] {
+  min-height: 52px;
+  border-radius: 14px;
+  font-weight: 800;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: transform .2s ease, box-shadow .2s ease;
+}
+#reservas button[type="submit"]:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 18px rgba(0,0,0,.12);
+}
+@media (max-width: 600px) {
+  #reservas .form {
+    padding: 18px;
+    border-radius: 18px;
+  }
+}
+
 </style>
 </head>
 <body>
@@ -33,12 +80,12 @@ footer{background:var(--dark);color:#fff;padding:32px 18px;text-align:center;mar
 <div class="card"><b>⭐ Reseñas</b><a id="reviews" target="_blank">Dejar una reseña en Google</a></div>
 </section>
 <section id="menu"><div class="section-kicker">NUESTRA CARTA</div><h2>Platos y sabores de la casa</h2><div id="categories" class="categories"></div><div id="menuRoot"><p>Cargando carta…</p></div></section>
-<section id="reservar"><h2>Reserva su mesa</h2><div class="card"><form id="reservationForm" class="form">
+<section id="reservar"><div class="section-kicker">RESERVAS</div><h2>Reserve su mesa</h2><p class="reserve-intro">Complete sus datos y envíenos su solicitud. Le confirmaremos la reserva por WhatsApp.</p><div class="reserve-card"><form id="reservationForm" class="form">
 <div><label>Nombre<input required name="name"></label></div><div><label>Teléfono<input required name="phone"></label></div>
 <div><label>Fecha<input required type="date" name="date"></label></div><div><label>Hora<input required type="time" name="time" min="12:00" max="17:00"></label></div>
 <div><label>Personas<input required type="number" min="1" max="50" name="people"></label></div><div><label>¿Celebración especial?<select name="reason"><option value="">No</option><option>Cumpleaños</option><option>Aniversario</option><option>Otra celebración</option></select></label></div>
 <div class="full"><label>Observaciones<textarea name="observations" placeholder="Algún detalle que debamos saber…"></textarea></label></div>
-<div class="full"><button class="btn" type="submit">Enviar reserva</button></div><div id="reserveMsg" class="full"></div>
+<div class="full"><button class="btn reserve-submit" type="submit">✨ Solicitar reserva</button><div class="reserve-note">Su solicitud se guardará y se enviará por WhatsApp para confirmación.</div></div><div id="reserveMsg" class="full"></div>
 </form></div></section>
 <section><h2>Visítenos</h2><div class="card"><div class="wifi">📶 Wi-Fi: <b id="wifiName">Perez Perez ltda</b><button class="btn alt" id="copyWifi" type="button">Copiar contraseña</button></div><p style="text-align:center;color:var(--muted)">Conéctese y disfrute de su visita.</p></div></section>
 </main><footer><b>Morros de Pichilemu · Restaurante Familiar</b><br><span id="footAddress">Tres Montes 254, San Fernando</span></footer>
