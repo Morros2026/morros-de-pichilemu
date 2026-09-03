@@ -135,7 +135,88 @@ footer{background:var(--dark);color:#fff;padding:32px 18px;text-align:center;mar
   .footer-tagline{font-size:1.55rem}
   .footer-copy{font-size:.66rem}
 }
-</style></head>
+</style>
+<style id="maritime-side-design">
+  /* Marco marino alrededor de la fachada */
+  .hero-maritime-wrap{
+    position:relative;
+    display:grid;
+    grid-template-columns:minmax(150px,1fr) minmax(0, 820px) minmax(150px,1fr);
+    align-items:center;
+    gap:18px;
+    width:100%;
+    max-width:1280px;
+    margin:0 auto;
+  }
+  .hero-maritime-side{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    gap:12px;
+    min-height:260px;
+    text-align:center;
+    color:inherit;
+  }
+  .hero-maritime-side .nautical-icon{
+    font-size:42px;
+    line-height:1;
+    opacity:.82;
+    filter:drop-shadow(0 2px 4px rgba(0,0,0,.15));
+  }
+  .hero-maritime-side .nautical-title{
+    margin:0;
+    font-size:13px;
+    font-weight:700;
+    letter-spacing:2.2px;
+    text-transform:uppercase;
+  }
+  .hero-maritime-side .nautical-sub{
+    margin:0;
+    max-width:150px;
+    font-size:11px;
+    line-height:1.55;
+    letter-spacing:.8px;
+    opacity:.78;
+  }
+  .hero-maritime-side .wave{
+    font-size:25px;
+    letter-spacing:-4px;
+    opacity:.65;
+    transform:scaleX(1.15);
+  }
+  .hero-maritime-side.left .nautical-icon{ transform:rotate(-8deg); }
+  .hero-maritime-side.right .nautical-icon{ transform:rotate(4deg); }
+
+  .hero-maritime-photo{
+    position:relative;
+    z-index:1;
+    width:100%;
+  }
+
+  @media (max-width: 900px){
+    .hero-maritime-wrap{
+      grid-template-columns:1fr;
+      gap:8px;
+    }
+    .hero-maritime-side{
+      min-height:0;
+      flex-direction:row;
+      flex-wrap:wrap;
+      gap:8px 14px;
+      padding:8px 12px;
+    }
+    .hero-maritime-side .nautical-icon{font-size:28px;}
+    .hero-maritime-side .nautical-title{font-size:11px;letter-spacing:1.5px;}
+    .hero-maritime-side .nautical-sub,
+    .hero-maritime-side .wave{display:none;}
+    .hero-maritime-photo{order:0;}
+    .hero-maritime-side.left{order:1;}
+    .hero-maritime-side.right{order:2;}
+  }
+</style>
+
+</head>
 <body>
 <header><div class="nav"><a class="brand" href="#"><img id="logo" src="logo_morros_transparente.png"><span>Morros de Pichilemu</span></a><div class="actions"><a class="btn" href="#reservar">Reservas</a><a id="waTop" class="btn dark" target="_blank">WhatsApp</a></div></div></header>
 <main>
