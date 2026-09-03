@@ -135,6 +135,21 @@ footer{background:var(--dark);color:#fff;padding:32px 18px;text-align:center;mar
   .footer-tagline{font-size:1.55rem}
   .footer-copy{font-size:.66rem}
 }
+
+/* Barra de accesos rápidos: limpia, visual y pensada primero para celular */
+.info-bar{display:flex;gap:10px;align-items:center;margin:18px 0 10px;padding:10px 2px;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch;position:relative;z-index:10}
+.info-bar::-webkit-scrollbar{display:none}
+.info-action{flex:0 0 58px;width:58px;height:58px;display:flex;align-items:center;justify-content:center;padding:0;border:1px solid var(--line);border-radius:18px;background:rgba(255,255,255,.98);color:var(--dark);text-decoration:none;font-weight:800;box-shadow:0 6px 18px rgba(8,63,67,.07);cursor:pointer;transition:transform .2s ease,box-shadow .2s ease,border-color .2s ease,background .2s ease}
+.info-action:hover{transform:translateY(-2px);box-shadow:0 12px 24px rgba(8,63,67,.11);border-color:#cfe2df;background:#fff}
+.info-action img{width:34px;height:34px;object-fit:contain;display:block}
+.maps-mark,.maps-mark svg{width:34px;height:34px;display:block}
+.clock-mark{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;color:var(--teal);border:2.5px solid currentColor;position:relative}
+.clock-mark:before{content:"";width:2px;height:10px;background:currentColor;position:absolute;top:6px;left:15px;border-radius:2px}.clock-mark:after{content:"";width:8px;height:2px;background:currentColor;position:absolute;top:15px;left:15px;transform:rotate(25deg);transform-origin:left center;border-radius:2px}
+.info-review{flex:0 0 auto;height:58px;min-width:132px;padding:0 14px;border-radius:18px;display:flex;align-items:center;justify-content:center;gap:8px;background:var(--dark);color:#fff;text-decoration:none;font-size:.82rem;line-height:1.15;text-align:center;box-shadow:0 7px 20px rgba(8,63,67,.16)}
+.info-review .review-star{font-size:1.35rem;line-height:1;color:#f5c542}.info-review span:last-child{max-width:88px}
+.hours-panel{margin:0 0 20px;padding:16px 18px;border:1px solid var(--line);border-radius:20px;background:rgba(255,255,255,.98);box-shadow:0 10px 28px rgba(8,63,67,.08);animation:hoursOpen .2s ease}.hours-panel[hidden]{display:none}.hours-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px}.hours-head strong{display:block;color:var(--dark);font-size:1.05rem}.hours-head small{display:block;color:var(--muted);margin-top:3px}.hours-head button{border:0;background:#f1f5f4;color:var(--dark);width:34px;height:34px;border-radius:50%;font-size:1.3rem;cursor:pointer}.hours-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}.hours-day{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:9px 11px;border-radius:12px;background:#f7faf9}.hours-day b{color:var(--dark)}.hours-day span{color:var(--teal);font-weight:800;text-align:right}.hours-day.closed span{color:#a33}.hours-note{margin:12px 0 0;padding:10px 12px;border-radius:12px;background:#fff8e8;color:#7b5a18;font-size:.88rem;line-height:1.45}@keyframes hoursOpen{from{opacity:0;transform:translateY(-5px)}to{opacity:1;transform:translateY(0)}}
+@media(min-width:901px){.info-bar{overflow:visible;justify-content:center}.hours-grid{grid-template-columns:repeat(4,minmax(0,1fr))}}
+@media(max-width:650px){.info-bar{margin:12px -2px 8px;padding:8px 2px;gap:9px}.info-action{flex-basis:56px;width:56px;height:56px;border-radius:17px}.info-action img{width:32px;height:32px}.maps-mark,.maps-mark svg{width:32px;height:32px}.clock-mark{width:32px;height:32px}.clock-mark:before{left:14px}.clock-mark:after{left:14px}.info-review{height:56px;min-width:128px;border-radius:17px;font-size:.78rem}.hours-panel{margin:0 0 18px;padding:14px}.hours-grid{grid-template-columns:1fr}.hours-day{padding:10px 11px}}
 </style>
 <style id="hero-full-width-final">
 html, body {
@@ -243,11 +258,18 @@ main, .menu, .menu-container, .content, .page-content{
 <header><div class="nav"><a class="brand" href="#"><img id="logo" src="logo_morros_transparente.png"><span>Morros de Pichilemu</span></a><div class="actions"><a class="btn" href="#reservar">Reservas</a><a id="waTop" class="btn dark" target="_blank">WhatsApp</a></div></div></header>
 <main>
 <section class="hero"><div class="hero-content"><img id="heroLogo" class="hero-logo" src="logo_morros_transparente.png"><h1>Sabores del mar<br>que llegan a su mesa</h1><p>Pescados, mariscos y preparaciones de la casa en un ambiente cálido y familiar.</p></div></section>
-<section class="info">
-<div class="card"><b>📍 Dirección</b><span id="address">Tres Montes 254, San Fernando</span><br><a id="maps" target="_blank">Ver en Google Maps</a></div>
-<div class="card"><b>🕐 Horario</b><span id="hours">Lunes a Domingo · 12:00 a 17:00 hrs</span></div>
-<div class="card"><b>🛵 Pedidos</b><div class="actions" style="justify-content:flex-start"><a id="pedidos" class="btn alt" target="_blank">PedidosYa</a><a id="uber" class="btn alt" target="_blank">Uber Eats</a></div></div>
-<div class="card"><b>⭐ Reseñas</b><a id="reviews" target="_blank">Dejar una reseña en Google</a></div>
+<section class="info-bar" aria-label="Accesos rápidos">
+  <a class="info-action" id="maps" target="_blank" rel="noopener" aria-label="Abrir ubicación en Google Maps" title="Google Maps"><span class="maps-mark"><svg viewBox="0 0 48 48" aria-hidden="true"><path fill="#EA4335" d="M24 4c-8.3 0-15 6.7-15 15 0 11.1 15 25 15 25s15-13.9 15-25C39 10.7 32.3 4 24 4Z"/><circle cx="24" cy="19" r="6" fill="#fff"/></svg></span></a>
+  <a class="info-action" id="instagram" target="_blank" rel="noopener" aria-label="Abrir Instagram del restaurante" title="Instagram"><img src="https://cdn.simpleicons.org/instagram/E4405F" alt="Instagram"></a>
+  <a class="info-action" id="pedidos" target="_blank" rel="noopener" aria-label="Pedir por PedidosYa" title="PedidosYa"><img src="https://upload.wikimedia.org/wikipedia/commons/6/60/PedidosYa_logo.svg" alt="PedidosYa"></a>
+  <a class="info-action" id="uber" target="_blank" rel="noopener" aria-label="Pedir por Uber Eats" title="Uber Eats"><img src="https://cdn.simpleicons.org/ubereats/06C167" alt="Uber Eats"></a>
+  <button class="info-action" id="hoursToggle" type="button" aria-expanded="false" aria-controls="hoursPanel" aria-label="Ver horarios" title="Horarios"><span class="clock-mark" aria-hidden="true"></span></button>
+  <a class="info-review" id="reviews" target="_blank" rel="noopener" aria-label="Déjanos tu reseña en Google"><span class="review-star">★</span><span>Déjanos tu reseña</span></a>
+</section>
+<section class="hours-panel" id="hoursPanel" hidden aria-label="Horarios de atención">
+  <div class="hours-head"><div><strong>Horarios de atención</strong><small id="hoursSummary">Consulte nuestros horarios por día</small></div><button id="hoursClose" type="button" aria-label="Cerrar horarios">×</button></div>
+  <div id="hoursGrid" class="hours-grid"></div>
+  <p id="hoursNote" class="hours-note" hidden></p>
 </section>
 <section id="menu"><div class="section-kicker">NUESTRA CARTA</div><h2>Platos y sabores de la casa</h2><div id="categories" class="categories"></div><div id="menuRoot"><p>Cargando carta…</p></div></section>
 <section id="reservar"><div class="section-kicker">RESERVAS</div><h2>Reserve su mesa</h2><p class="reserve-intro">Complete sus datos y envíenos su solicitud. Le confirmaremos la reserva por WhatsApp.</p><div class="reserve-card"><form id="reservationForm" class="form">
@@ -263,10 +285,46 @@ main, .menu, .menu-container, .content, .page-content{
 const SUPABASE_URL="https://dodvvywybklwinrulvov.supabase.co";
 const SUPABASE_KEY="sb_publishable_XkqdpRz6lLQFjscnDNrDZw_PMRBQhqC";
 const db=supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
-let settings={whatsapp:"56963526045",wifi_password:"Restaurantelosmorros250."};
+let settings={whatsapp:"56963526045",wifi_password:"Restaurantelosmorros250.",instagram:"https://www.instagram.com/losmorros.restaurante/",hours_by_day:null,hours_note:""};
 const money=n=>new Intl.NumberFormat("es-CL",{style:"currency",currency:"CLP",maximumFractionDigits:0}).format(n);
 function waLink(text="Hola, quiero hacer una reserva en Restaurante Morros de Pichilemu."){return "https://wa.me/"+settings.whatsapp+"?text="+encodeURIComponent(text)}
-async function loadSettings(){const {data}=await db.from("site_content").select("content").eq("id","main").single();if(data?.content){settings={...settings,...data.content};document.getElementById("address").textContent=settings.address||"";document.getElementById("hours").textContent=settings.hours||"";document.getElementById("maps").href=settings.google_maps||"#";document.getElementById("pedidos").href=settings.pedidos_ya||"#";document.getElementById("uber").href=settings.uber_eats||"#";document.getElementById("reviews").href=settings.google_reviews||"#";document.getElementById("wifiName").textContent=settings.wifi_name||"";if(settings.logo){document.getElementById("logo").src=settings.logo;document.getElementById("heroLogo").src=settings.logo}if(settings.hero_image){document.documentElement.style.setProperty("--hero-image",`url("${settings.hero_image}")`)}else{document.documentElement.style.setProperty("--hero-image","linear-gradient(135deg,#164d55,#082f38)")}if(settings.watermark_image){document.documentElement.style.setProperty("--watermark-image",`url("${settings.watermark_image}")`)}else if(settings.logo){document.documentElement.style.setProperty("--watermark-image",`url("${settings.logo}")`)}else{document.documentElement.style.setProperty("--watermark-image","none")}}document.getElementById("waTop").href=waLink()}
+async function loadSettings(){
+  const {data}=await db.from("site_content").select("content").eq("id","main").single();
+  if(data?.content){
+    settings={...settings,...data.content};
+    document.getElementById("maps").href=settings.google_maps||"#";
+    document.getElementById("instagram").href=settings.instagram||"https://www.instagram.com/losmorros.restaurante/";
+    document.getElementById("pedidos").href=settings.pedidos_ya||"#";
+    document.getElementById("uber").href=settings.uber_eats||"#";
+    document.getElementById("reviews").href=settings.google_reviews||"https://g.page/r/CUeAqcZ6oxg0EBE/review";
+    if(settings.logo){document.getElementById("logo").src=settings.logo;document.getElementById("heroLogo").src=settings.logo}
+    if(settings.hero_image){document.documentElement.style.setProperty("--hero-image",`url("${settings.hero_image}")`)}else{document.documentElement.style.setProperty("--hero-image","linear-gradient(135deg,#164d55,#082f38)")}
+    if(settings.watermark_image){document.documentElement.style.setProperty("--watermark-image",`url("${settings.watermark_image}")`)}else if(settings.logo){document.documentElement.style.setProperty("--watermark-image",`url("${settings.logo}")`)}else{document.documentElement.style.setProperty("--watermark-image","none")}
+  }
+  renderHours();
+  document.getElementById("waTop").href=waLink();
+}
+
+const dayNames=["Lunes","Martes","Miércoles","Jueves","Viernes","Sábado","Domingo"];
+const defaultHours=()=>dayNames.map(day=>({day,open:"12:00",close:"17:00",closed:false}));
+function normalizedHours(){
+  if(Array.isArray(settings.hours_by_day)&&settings.hours_by_day.length===7){
+    return settings.hours_by_day.map((h,i)=>({day:dayNames[i],open:h.open||"12:00",close:h.close||"17:00",closed:!!h.closed}));
+  }
+  return defaultHours();
+}
+function renderHours(){
+  const list=normalizedHours();
+  document.getElementById("hoursGrid").innerHTML=list.map(h=>`<div class="hours-day ${h.closed?"closed":""}"><b>${h.day}</b><span>${h.closed?"Cerrado":`${h.open} a ${h.close} hrs`}</span></div>`).join("");
+  const openDays=list.filter(h=>!h.closed);
+  const summary=openDays.length===7?`${openDays[0].open} a ${openDays[0].close} hrs todos los días`:"Consulte los horarios de cada día";
+  document.getElementById("hoursSummary").textContent=summary;
+  const note=settings.hours_note||"";
+  const noteEl=document.getElementById("hoursNote"); noteEl.textContent=note; noteEl.hidden=!note;
+}
+const hoursToggle=document.getElementById("hoursToggle"),hoursPanel=document.getElementById("hoursPanel"),hoursClose=document.getElementById("hoursClose");
+function toggleHours(show){hoursPanel.hidden=!show;hoursToggle.setAttribute("aria-expanded",String(show));if(show)renderHours()}
+hoursToggle.addEventListener("click",()=>toggleHours(hoursPanel.hidden));hoursClose.addEventListener("click",()=>toggleHours(false));
 async function loadMenu(){const {data:cats,error:catError}=await db.from("menu_categories").select("*").eq("active",true).order("sort_order");const {data:items,error:itemError}=await db.from("menu_items").select("*").eq("active",true).order("sort_order");const root=document.getElementById("menuRoot");if(catError||itemError){console.error(catError||itemError);root.innerHTML="<p>No se pudo cargar la carta. Intente actualizar la página.</p>";return}const catBox=document.getElementById("categories");catBox.innerHTML=(cats||[]).map((c,idx)=>`<a href="#cat-${c.id}" class="${idx===0?"active":""}" data-cat="cat-${c.id}">${c.name}</a>`).join("");root.innerHTML=(cats||[]).map(c=>{const list=(items||[]).filter(i=>i.category_id===c.id);return `<section class="menu-section" id="cat-${c.id}"><h2>${c.name}</h2><div class="menu-grid">${list.map((i,idx)=>`<article class="dish" style="animation-delay:${Math.min(idx,8)*45}ms">${i.image_url?`<img class="dish-photo" src="${i.image_url}" alt="${i.name}">`:``}<div class="dish-main"><div class="dish-name">${i.name}</div>${i.description?`<div class="dish-desc">${i.description}</div>`:""}${i.sold_out?`<div class="sold">AGOTADO</div>`:""}<div class="price">${i.sold_out?"":money(i.price)}</div></div></article>`).join("")}</div></section>`}).join("");const dishes=[...root.querySelectorAll('.dish')];dishes.forEach(d=>d.setAttribute('tabindex','0'));const modal=document.getElementById('dishModal'),mImg=document.getElementById('dishModalImg'),mName=document.getElementById('dishModalName'),mDesc=document.getElementById('dishModalDesc'),mPrice=document.getElementById('dishModalPrice'),close=()=>{modal.classList.remove('open');modal.setAttribute('aria-hidden','true');document.body.style.overflow=''};const openDish=d=>{const img=d.querySelector('.dish-photo'),name=d.querySelector('.dish-name'),desc=d.querySelector('.dish-desc'),price=d.querySelector('.price');mName.textContent=name?.textContent||'';mDesc.textContent=desc?.textContent||'';mPrice.textContent=price?.textContent||'';if(img){mImg.src=img.src;mImg.alt=img.alt;mImg.style.display='block'}else{mImg.removeAttribute('src');mImg.style.display='none'}modal.classList.add('open');modal.setAttribute('aria-hidden','false');document.body.style.overflow='hidden'};dishes.forEach(d=>{d.addEventListener('click',()=>openDish(d));d.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();openDish(d)}})});document.getElementById('dishModalClose').addEventListener('click',close);modal.addEventListener('click',e=>{if(e.target===modal)close()});document.addEventListener('keydown',e=>{if(e.key==='Escape'&&modal.classList.contains('open'))close()});const catLinks=[...catBox.querySelectorAll("a[data-cat]")];
 const sections=(cats||[]).map(c=>document.getElementById("cat-"+c.id)).filter(Boolean);
 let manualCategoryUntil=0;
