@@ -70,24 +70,70 @@ footer{background:var(--dark);color:#fff;padding:32px 18px;text-align:center;mar
 
 <style>
 .site-footer{
- position:relative; margin-top:70px; min-height:360px;
- display:flex; align-items:center; justify-content:center;
- overflow:hidden; text-align:center; color:#fff;
- background:#071f28 url('footer-restaurante.png') center/cover no-repeat;
- border-radius:26px 26px 0 0;
+  position:relative;
+  margin-top:70px;
+  min-height:360px;
+  overflow:hidden;
+  border-radius:26px 26px 0 0;
+  text-align:center;
+  color:#fff;
+  background:#071f28;
 }
-.site-footer::before{
- content:""; position:absolute; inset:0;
- background:linear-gradient(180deg,rgba(4,20,27,.28),rgba(4,20,27,.82));
+.footer-inner{
+  position:relative;
+  min-height:360px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
 }
-.footer-inner{position:relative;z-index:1;max-width:900px;padding:70px 22px 35px}
-.footer-logo{width:min(190px,48vw);max-height:95px;object-fit:contain;margin:0 auto 14px;filter:drop-shadow(0 5px 14px rgba(0,0,0,.35))}
-.footer-title{margin:0;font-size:clamp(1.5rem,4vw,2.2rem);letter-spacing:.08em;font-weight:800}
-.footer-tagline{margin:10px 0 22px;font-size:1.08rem}
-.footer-copy{margin:0;font-size:.84rem;opacity:.78}
+.footer-photo{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  object-position:center;
+}
+.footer-inner::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:linear-gradient(180deg,rgba(4,20,27,.18),rgba(4,20,27,.78));
+}
+.footer-overlay{
+  position:relative;
+  z-index:2;
+  max-width:900px;
+  padding:55px 22px 28px;
+}
+.footer-logo{
+  width:min(190px,48vw);
+  max-height:100px;
+  object-fit:contain;
+  margin:0 auto 14px;
+  filter:drop-shadow(0 5px 14px rgba(0,0,0,.4));
+}
+.footer-tagline{
+  margin:8px 0 20px;
+  font-size:clamp(1rem,2.5vw,1.15rem);
+  font-weight:600;
+}
+.footer-line{
+  width:70px;
+  height:3px;
+  margin:0 auto 22px;
+  border-radius:99px;
+  background:rgba(255,255,255,.8);
+}
+.footer-copy{
+  margin:0;
+  font-size:.82rem;
+  opacity:.82;
+}
 @media(max-width:600px){
- .site-footer{min-height:300px;border-radius:20px 20px 0 0}
- .footer-inner{padding:55px 18px 28px}
+  .site-footer,.footer-inner{min-height:300px}
+  .site-footer{border-radius:20px 20px 0 0}
+  .footer-overlay{padding:45px 18px 24px}
 }
 </style>
 </style>
@@ -112,7 +158,17 @@ footer{background:var(--dark);color:#fff;padding:32px 18px;text-align:center;mar
 <div class="full"><button class="btn reserve-submit" type="submit">✨ Solicitar reserva</button><div class="reserve-note">Su solicitud se guardará y se enviará por WhatsApp para confirmación.</div></div><div id="reserveMsg" class="full"></div>
 </form></div></section>
 <section><h2>Visítenos</h2><div class="card"><div class="wifi">📶 Wi-Fi: <b id="wifiName">Perez Perez ltda</b><button class="btn alt" id="copyWifi" type="button">Copiar contraseña</button></div><p style="text-align:center;color:var(--muted)">Conéctese y disfrute de su visita.</p></div></section>
-</main><footer><b>Morros de Pichilemu · Restaurante Familiar</b><br><span id="footAddress">Tres Montes 254, San Fernando</span></footer>
+</main><footer class="site-footer" aria-label="Pie de página">
+  <div class="footer-inner">
+    <img class="footer-photo" src="footer-restaurante.png" alt="Restaurante Morros de Pichilemu">
+    <div class="footer-overlay">
+      <img id="footerLogo" class="footer-logo" src="logo_morros_transparente.png" alt="Morros de Pichilemu">
+      <p class="footer-tagline">Sabores del mar que llegan a su mesa</p>
+      <div class="footer-line"></div>
+      <p class="footer-copy">© Restaurante Morros de Pichilemu · Todos los derechos reservados.</p>
+    </div>
+  </div>
+</footer>
 <script>
 const SUPABASE_URL="https://dodvvywybklwinrulvov.supabase.co";
 const SUPABASE_KEY="sb_publishable_XkqdpRz6lLQFjscnDNrDZw_PMRBQhqC";
