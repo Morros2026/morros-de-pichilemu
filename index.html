@@ -171,43 +171,7 @@ html, body {
 </style>
 
 
-<style id="mobile-scroll-fix">
-html{
-  scroll-behavior:smooth;
-  overflow-x:hidden;
-}
-body{
-  overflow-x:hidden;
-  overscroll-behavior-x:none;
-}
-.categories{
-  position:sticky;
-  top:73px;
-  z-index:20;
-  overflow-x:auto;
-  overflow-y:hidden;
-  -webkit-overflow-scrolling:touch;
-  touch-action:pan-x;
-  overscroll-behavior-x:contain;
-  scrollbar-width:thin;
-}
-.categories a{
-  flex:0 0 auto;
-}
-.menu-section{
-  scroll-margin-top:145px;
-}
-@media(max-width:650px){
-  .categories{
-    top:67px;
-    padding-top:8px;
-    padding-bottom:12px;
-  }
-  .menu-section{
-    scroll-margin-top:125px;
-  }
-}
-</style>
+
 
 
 <style id="scroll-performance">
@@ -220,6 +184,57 @@ body{
   .dish-photo{
     will-change:auto;
   }
+}
+</style>
+
+
+<style id="mobile-scroll-fix-v2">
+html, body{
+  width:100%;
+  max-width:100%;
+  overflow-x:hidden;
+  overscroll-behavior-x:none;
+}
+
+.categories{
+  position:sticky !important;
+  top:0 !important;
+  z-index:9999 !important;
+  width:100% !important;
+  max-width:100% !important;
+  box-sizing:border-box !important;
+  overflow-x:auto !important;
+  overflow-y:hidden !important;
+  -webkit-overflow-scrolling:touch;
+  overscroll-behavior-x:contain;
+  touch-action:pan-x;
+  isolation:isolate;
+  background:rgba(255,255,255,.98);
+  box-shadow:0 3px 12px rgba(0,0,0,.08);
+}
+
+.categories a{
+  flex:0 0 auto !important;
+}
+
+.menu-section{
+  scroll-margin-top:80px !important;
+}
+
+@media(max-width:700px){
+  .categories{
+    top:0 !important;
+    padding-top:8px !important;
+    padding-bottom:10px !important;
+  }
+  .menu-section{
+    scroll-margin-top:78px !important;
+  }
+}
+
+/* Evita que un contenedor intermedio corte el sticky */
+main, .menu, .menu-container, .content, .page-content{
+  overflow:visible !important;
 }
 </style>
 
@@ -317,4 +332,18 @@ loadSettings();loadMenu();
     </div>
   </div>
 </footer>
+
+<script id="sticky-category-height-fix">
+(function(){
+  const catBar=document.querySelector(".categories");
+  if(!catBar) return;
+  const updateOffset=()=>{
+    const h=catBar.getBoundingClientRect().height;
+    document.documentElement.style.setProperty("--categories-height", h+"px");
+  };
+  updateOffset();
+  window.addEventListener("resize", updateOffset, {passive:true});
+})();
+</script>
+
 </body></html>
