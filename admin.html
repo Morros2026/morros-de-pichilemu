@@ -12,7 +12,7 @@
 <div class="card"><h2>Reservas</h2><div id="reservations"></div></div>
 </section></main>
 <script>
-const URL="https://dodvvywybklwinrulvov.supabase.co",KEY="sb_publishable_XkqdpRz6lLQFjscnDNrDZw_PMRBQhqC",db=supabase.createClient(URL,KEY),ADMIN="restaurantemorrosdepichilemu@gmail.com",REDIRECT=location.origin+location.pathname;let cats=[],items=[];
+const SUPABASE_URL="https://dodvvywybklwinrulvov.supabase.co",KEY="sb_publishable_XkqdpRz6lLQFjscnDNrDZw_PMRBQhqC",db=supabase.createClient(SUPABASE_URL,KEY),ADMIN="restaurantemorrosdepichilemu@gmail.com",REDIRECT=location.origin+location.pathname;let cats=[],items=[];
 const $=id=>document.getElementById(id),money=n=>new Intl.NumberFormat("es-CL",{style:"currency",currency:"CLP",maximumFractionDigits:0}).format(n);
 $("resetBtn").onclick=async()=>{const email=$("email").value.trim();if(!email){$("loginMsg").textContent="Ingrese su correo.";return}const {error}=await db.auth.resetPasswordForEmail(email,{redirectTo:REDIRECT});$("loginMsg").textContent=error?error.message:"Le enviamos un enlace para crear una nueva contraseña. Revise su correo."};
 $("savePassword").onclick=async()=>{const p=$("newPassword").value,p2=$("newPassword2").value;if(p.length<6){$("recoveryMsg").textContent="La contraseña debe tener al menos 6 caracteres.";return}if(p!==p2){$("recoveryMsg").textContent="Las contraseñas no coinciden.";return}const {error}=await db.auth.updateUser({password:p});$("recoveryMsg").textContent=error?error.message:"Contraseña actualizada. Ya puede ingresar al panel.";if(!error){setTimeout(()=>location.href=REDIRECT,1200)}};
