@@ -1,341 +1,48 @@
 <!doctype html>
-<html lang="es">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Admin · Morros de Pichilemu</title>
-<script src="https://unpkg.com/@supabase/supabase-js@2"></script>
-<style>
-:root{--t:#0d9f9f;--d:#083f43;--bg:#f5fafa;--line:#d9e8e8}
-*{box-sizing:border-box}
-body{margin:0;font-family:Arial,sans-serif;background:var(--bg);color:#173033}
-header{background:var(--d);color:#fff;padding:18px}
-main{max-width:1100px;margin:auto;padding:22px}
-.card{background:#fff;border:1px solid var(--line);border-radius:16px;padding:18px;margin:12px 0}
-.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
-.grid input,.grid textarea,.grid select{width:100%;padding:11px;border:1px solid var(--line);border-radius:9px;font:inherit}
-.btn{background:var(--t);color:#fff;border:0;border-radius:9px;padding:10px 14px;font-weight:700;cursor:pointer}
-.btn.red{background:#a33}.btn.alt{background:#e8f5f5;color:var(--d)}
-.row{display:flex;gap:8px;align-items:center;justify-content:space-between;flex-wrap:wrap}
-.item{padding:12px;border-top:1px solid var(--line)}
-small{color:#667}.hidden{display:none}
-.hours-table{display:grid;gap:8px;margin-top:12px}
-.day-row{display:grid;grid-template-columns:150px 1fr 1fr 100px;gap:8px;align-items:center;padding:8px;border:1px solid var(--line);border-radius:10px}
-.day-row input[type=time]{width:100%;padding:9px;border:1px solid var(--line);border-radius:8px}
-.note{margin-top:10px}
-@media(max-width:700px){
- .grid{grid-template-columns:1fr}
- .day-row{grid-template-columns:1fr 1fr}
- .day-row strong{grid-column:1/-1}
- .day-row label:last-child{grid-column:1/-1}
-}
-</style>
-</head>
-<body>
-<header>
- <div class="row">
-  <div><b>Panel administrador</b><br><small style="color:#cde">Morros de Pichilemu</small></div>
-  <button id="logout" class="btn alt hidden">Cerrar sesión</button>
- </div>
-</header>
-
-<main>
-<section id="login" class="card">
- <h2>Ingreso</h2>
- <p>Use el correo administrador autorizado.</p>
- <div class="grid">
-  <input id="email" type="email" value="restaurantemorrosdepichilemu@gmail.com" placeholder="Correo">
-  <input id="password" type="password" placeholder="Contraseña">
- </div><br>
- <button id="loginBtn" class="btn">Ingresar</button>
- <button id="resetBtn" class="btn alt">Recuperar contraseña</button>
- <p id="loginMsg"></p>
-</section>
-
-<section id="recovery" class="card hidden">
- <h2>Crear nueva contraseña</h2>
- <p>Escriba una nueva contraseña para el panel de administración.</p>
- <div class="grid">
-  <input id="newPassword" type="password" placeholder="Nueva contraseña">
-  <input id="newPassword2" type="password" placeholder="Repetir contraseña">
- </div><br>
- <button id="savePassword" class="btn">Guardar nueva contraseña</button>
- <p id="recoveryMsg"></p>
-</section>
-
+<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Admin · Morros de Pichilemu</title><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>:root{--t:#0d9f9f;--d:#083f43;--bg:#f5fafa;--line:#d9e8e8;--muted:#667779}*{box-sizing:border-box}body{margin:0;font-family:Arial;background:var(--bg);color:#173033}header{background:var(--d);color:#fff;padding:18px}main{max-width:1100px;margin:auto;padding:22px}.card{background:#fff;border:1px solid var(--line);border-radius:16px;padding:18px;margin:12px 0}.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}.grid input,.grid textarea,.grid select{width:100%;padding:11px;border:1px solid var(--line);border-radius:9px;font:inherit}.btn{background:var(--t);color:#fff;border:0;border-radius:9px;padding:10px 14px;font-weight:700;cursor:pointer}.btn.red{background:#a33}.btn.alt{background:#e8f5f5;color:var(--d)}.btn:disabled{opacity:.45;cursor:not-allowed}.row{display:flex;gap:8px;align-items:center;justify-content:space-between;flex-wrap:wrap}.item{padding:12px;border-top:1px solid var(--line)}small{color:#667}.hidden{display:none}.upload-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}.upload-box{border:1px solid var(--line);border-radius:14px;padding:14px;background:#fbfdfd}.preview{width:100%;height:150px;object-fit:cover;border-radius:10px;background:#eef4f3;display:block;margin:8px 0}.preview.logo-preview{object-fit:contain;background:#fff}.hint{color:var(--muted);font-size:.9rem;line-height:1.45}@media(max-width:700px){.grid,.upload-grid{grid-template-columns:1fr}}</style></head>
+<body><header><div class="row"><div><b>Panel administrador</b><br><small style="color:#cde">Morros de Pichilemu</small></div><button id="logout" class="btn alt hidden">Cerrar sesión</button></div></header><main>
+<section id="login" class="card"><h2>Ingreso</h2><p>Use el correo administrador autorizado.</p><div class="grid"><input id="email" type="email" value="restaurantemorrosdepichilemu@gmail.com" placeholder="Correo"><input id="password" type="password" placeholder="Contraseña"></div><br><button id="loginBtn" class="btn">Ingresar</button> <button id="resetBtn" class="btn alt">Recuperar contraseña</button><p id="loginMsg"></p></section><section id="recovery" class="card hidden"><h2>Crear nueva contraseña</h2><p>Escriba una nueva contraseña para el panel de administración.</p><div class="grid"><input id="newPassword" type="password" placeholder="Nueva contraseña"><input id="newPassword2" type="password" placeholder="Repetir contraseña"></div><br><button id="savePassword" class="btn">Guardar nueva contraseña</button><p id="recoveryMsg"></p></section>
 <section id="panel" class="hidden">
-
-<div class="card">
- <div class="row"><h2>Configuración del restaurante</h2><button class="btn" id="saveSettings">Guardar</button></div>
- <div class="grid">
-  <label>Dirección<input id="s_address"></label>
-  <label>Instagram<input id="s_instagram" placeholder="https://www.instagram.com/losmorros.restaurante/"></label>
-  <label>WhatsApp<input id="s_whatsapp"></label>
-  <label>Google Maps<input id="s_maps"></label>
-  <label>PedidosYa<input id="s_pedidos"></label>
-  <label>Uber Eats<input id="s_uber"></label>
-  <label>Reseñas Google<input id="s_reviews"></label>
-  <label>Wi-Fi<input id="s_wifi"></label>
-  <label>Contraseña Wi-Fi<input id="s_wifi_pass"></label>
-  <label>Logo (ruta)<input id="s_logo"></label>
- </div>
-
- <div class="card" style="margin-top:18px;background:#fbfefe">
-  <h3>Horarios por día</h3>
-  <p><small>Puede cambiar el horario de cada día y marcar un día como cerrado.</small></p>
-  <div id="hoursEditor" class="hours-table"></div>
-  <label class="note">Nota especial de horario
-   <input id="s_hours_note" placeholder="Ej.: Feriado: atención hasta las 16:00 hrs.">
-  </label>
- </div>
-</div>
-
-<div class="card">
- <div class="row"><h2>Categorías</h2><button class="btn" id="addCat">Nueva categoría</button></div>
- <div id="cats"></div>
-</div>
-
-<div class="card">
- <h2>Platos</h2>
- <p><small>Puede editar nombre, precio, foto, visibilidad y agotado.</small></p>
- <div id="items"></div>
-</div>
-
-<div class="card">
- <h2>Reservas</h2>
- <div id="reservations"></div>
-</div>
-
-</section>
-</main>
-
+<div class="card"><div class="row"><h2>Configuración del restaurante</h2><button class="btn" id="saveSettings">Guardar</button></div><div class="grid">
+<label>Dirección<input id="s_address"></label><label>Horario<input id="s_hours"></label><label>WhatsApp<input id="s_whatsapp"></label><label>Google Maps<input id="s_maps"></label><label>PedidosYa<input id="s_pedidos"></label><label>Uber Eats<input id="s_uber"></label><label>Reseñas Google<input id="s_reviews"></label><label>Wi-Fi<input id="s_wifi"></label><label>Contraseña Wi-Fi<input id="s_wifi_pass"></label><label>Logo (URL/ruta)<input id="s_logo"></label>
+</div></div>
+<div class="card"><div class="row"><div><h2>Diseño de la página</h2><p class="hint">Aquí puede cambiar las imágenes sin tocar el código. La portada usa la fachada del restaurante y el fondo general se muestra como una marca de agua muy tenue.</p></div></div><div class="upload-grid">
+<div class="upload-box"><b>📷 Imagen de portada (fachada)</b><p class="hint">Se mostrará en la parte superior de la página.</p><img id="heroPreview" class="preview" alt="Vista previa de portada"><button class="btn" id="uploadHero" type="button">Subir / cambiar imagen</button> <button class="btn red" id="clearHero" type="button">Eliminar</button></div>
+<div class="upload-box"><b>🌊 Fondo general / marca de agua</b><p class="hint">Ideal para una imagen clara con varios logos. Se aplicará automáticamente con baja opacidad.</p><img id="watermarkPreview" class="preview" alt="Vista previa del fondo"><button class="btn" id="uploadWatermark" type="button">Subir / cambiar fondo</button> <button class="btn red" id="clearWatermark" type="button">Eliminar</button></div>
+</div></div>
+<div class="card"><div class="row"><h2>Categorías</h2><button class="btn" id="addCat">Nueva categoría</button></div><div id="cats"></div></div>
+<div class="card"><h2>Platos</h2><p><small>Puede editar nombre, precio, foto, visibilidad y agotado. Las fotos pueden subirse directamente.</small></p><div id="items"></div></div>
+<div class="card"><h2>Reservas</h2><div id="reservations"></div></div>
+</section></main>
 <script>
-const SUPABASE_URL="https://dodvvywybklwinrulvov.supabase.co";
-const KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRvZHZ2eXd5Ymtsd2lucnVsdm92Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODgzMTg5NDUsImV4cCI6MjEwMzg5NDk0NX0.QrwITo8GghhunCagvxqCPfOq-bzPm9F72J1FiwmrQpk";
-const db=supabase.createClient(SUPABASE_URL,KEY);
-const ADMIN="restaurantemorrosdepichilemu@gmail.com";
-const REDIRECT=location.origin+location.pathname;
-let cats=[],items=[];
-const $=id=>document.getElementById(id);
-const money=n=>new Intl.NumberFormat("es-CL",{style:"currency",currency:"CLP",maximumFractionDigits:0}).format(n);
-
-const DAYS=[
- ["lunes","Lunes"],["martes","Martes"],["miercoles","Miércoles"],
- ["jueves","Jueves"],["viernes","Viernes"],["sabado","Sábado"],["domingo","Domingo"]
-];
-const DEFAULT_HOURS={};
-DAYS.forEach(([k])=>DEFAULT_HOURS[k]={open:"12:00",close:"17:00",closed:false});
-
-function normalizeHours(value){
- let h={...DEFAULT_HOURS};
- if(value && typeof value==="object"){
-  DAYS.forEach(([k])=>{
-   if(value[k]) h[k]={...h[k],...value[k]};
-  });
- }
- return h;
-}
-
-function renderHoursEditor(value){
- const h=normalizeHours(value);
- $("hoursEditor").innerHTML=DAYS.map(([key,label])=>{
-  const d=h[key];
-  return `<div class="day-row">
-   <strong>${label}</strong>
-   <label>Desde<input type="time" id="open_${key}" value="${d.open||"12:00"}" ${d.closed?"disabled":""}></label>
-   <label>Hasta<input type="time" id="close_${key}" value="${d.close||"17:00"}" ${d.closed?"disabled":""}></label>
-   <label><input type="checkbox" id="closed_${key}" ${d.closed?"checked":""} onchange="toggleDay('${key}')"> Cerrado</label>
-  </div>`;
- }).join("");
-}
-
-window.toggleDay=key=>{
- const closed=$("closed_"+key).checked;
- $("open_"+key).disabled=closed;
- $("close_"+key).disabled=closed;
-};
-
-function collectHours(){
- const h={};
- DAYS.forEach(([key])=>{
-  h[key]={
-   open:$("open_"+key).value,
-   close:$("close_"+key).value,
-   closed:$("closed_"+key).checked
-  };
- });
- return h;
-}
-
-$("resetBtn").onclick=async()=>{
- const email=$("email").value.trim();
- if(!email){$("loginMsg").textContent="Ingrese su correo.";return}
- const {error}=await db.auth.resetPasswordForEmail(email,{redirectTo:REDIRECT});
- $("loginMsg").textContent=error?error.message:"Le enviamos un enlace para crear una nueva contraseña. Revise su correo.";
-};
-
-$("savePassword").onclick=async()=>{
- const p=$("newPassword").value,p2=$("newPassword2").value;
- if(p.length<6){$("recoveryMsg").textContent="La contraseña debe tener al menos 6 caracteres.";return}
- if(p!==p2){$("recoveryMsg").textContent="Las contraseñas no coinciden.";return}
- const {error}=await db.auth.updateUser({password:p});
- $("recoveryMsg").textContent=error?error.message:"Contraseña actualizada. Ya puede ingresar al panel.";
- if(!error)setTimeout(()=>location.href=REDIRECT,1200);
-};
-
-$("loginBtn").onclick=async()=>{
- const {data,error}=await db.auth.signInWithPassword({
-  email:$("email").value,password:$("password").value
- });
- if(error){$("loginMsg").textContent=error.message;return}
- if(data.user.email.toLowerCase()!==ADMIN){
-  await db.auth.signOut();$("loginMsg").textContent="Correo no autorizado.";return;
- }
- showPanel();
-};
-
-async function showPanel(){
- $("login").classList.add("hidden");
- $("panel").classList.remove("hidden");
- $("logout").classList.remove("hidden");
- await loadAll();
-}
+const SUPABASE_URL="https://dodvvywybklwinrulvov.supabase.co",KEY="sb_publishable_XkqdpRz6lLQFjscnDNrDZw_PMRBQhqC",db=supabase.createClient(SUPABASE_URL,KEY),ADMIN="restaurantemorrosdepichilemu@gmail.com",REDIRECT=location.origin+location.pathname;let cats=[],items=[];
+const $=id=>document.getElementById(id),money=n=>new Intl.NumberFormat("es-CL",{style:"currency",currency:"CLP",maximumFractionDigits:0}).format(n);
+$("resetBtn").onclick=async()=>{const email=$("email").value.trim();if(!email){$("loginMsg").textContent="Ingrese su correo.";return}const {error}=await db.auth.resetPasswordForEmail(email,{redirectTo:REDIRECT});$("loginMsg").textContent=error?error.message:"Le enviamos un enlace para crear una nueva contraseña. Revise su correo."};
+$("savePassword").onclick=async()=>{const p=$("newPassword").value,p2=$("newPassword2").value;if(p.length<6){$("recoveryMsg").textContent="La contraseña debe tener al menos 6 caracteres.";return}if(p!==p2){$("recoveryMsg").textContent="Las contraseñas no coinciden.";return}const {error}=await db.auth.updateUser({password:p});$("recoveryMsg").textContent=error?error.message:"Contraseña actualizada. Ya puede ingresar al panel.";if(!error){setTimeout(()=>location.href=REDIRECT,1200)}};
+$("loginBtn").onclick=async()=>{const {data,error}=await db.auth.signInWithPassword({email:$("email").value,password:$("password").value});if(error){$("loginMsg").textContent=error.message;return}if(data.user.email.toLowerCase()!==ADMIN){await db.auth.signOut();$("loginMsg").textContent="Correo no autorizado.";return}showPanel()};
+async function showPanel(){ $("login").classList.add("hidden");$("panel").classList.remove("hidden");$("logout").classList.remove("hidden");await loadAll()}
 $("logout").onclick=()=>db.auth.signOut().then(()=>location.reload());
-
-async function loadAll(){
- const q=await db.from("site_content").select("content").eq("id","main").single();
- const s=q.data?.content||{};
- const map={
-  address:"s_address",instagram:"s_instagram",whatsapp:"s_whatsapp",
-  google_maps:"s_maps",pedidos_ya:"s_pedidos",uber_eats:"s_uber",
-  google_reviews:"s_reviews",wifi_name:"s_wifi",wifi_password:"s_wifi_pass",logo:"s_logo"
- };
- Object.keys(map).forEach(k=>$(map[k]).value=s[k]||"");
- renderHoursEditor(s.hours_by_day||null);
- $("s_hours_note").value=s.hours_note||"";
-
- const c=await db.from("menu_categories").select("*").order("sort_order");
- cats=c.data||[];
- const i=await db.from("menu_items").select("*").order("sort_order");
- items=i.data||[];
- renderCats();renderItems();renderReservations();
-}
-
-$("saveSettings").onclick=async()=>{
- const old=await db.from("site_content").select("content").eq("id","main").single();
- const previous=old.data?.content||{};
- const content={
-  ...previous,
-  address:$("s_address").value,
-  instagram:$("s_instagram").value,
-  whatsapp:$("s_whatsapp").value.replace(/\D/g,""),
-  google_maps:$("s_maps").value,
-  pedidos_ya:$("s_pedidos").value,
-  uber_eats:$("s_uber").value,
-  google_reviews:$("s_reviews").value,
-  wifi_name:$("s_wifi").value,
-  wifi_password:$("s_wifi_pass").value,
-  logo:$("s_logo").value,
-  hours_by_day:collectHours(),
-  hours_note:$("s_hours_note").value
- };
- const {error}=await db.from("site_content").upsert({
-  id:"main",content,updated_at:new Date().toISOString()
- });
- alert(error?error.message:"Configuración guardada.");
-};
-
-function renderCats(){
- $("cats").innerHTML=cats.map(c=>`<div class="item">
-  <div class="row"><b>${c.name}</b>
-  <span><button class="btn alt" onclick="editCat('${c.id}')">Renombrar</button>
-  <button class="btn red" onclick="delCat('${c.id}')">Eliminar</button></span></div>
- </div>`).join("");
-}
-
-window.editCat=async id=>{
- const c=cats.find(x=>x.id===id),n=prompt("Nombre de la categoría:",c.name);
- if(n&&n!==c.name){await db.from("menu_categories").update({name:n}).eq("id",id);loadAll();}
-};
-
-window.delCat=async id=>{
- if(confirm("¿Eliminar categoría? Primero debe quedar sin platos.")){
-  const {error}=await db.from("menu_categories").delete().eq("id",id);
-  alert(error?.message||"Categoría eliminada.");loadAll();
- }
-};
-
-$("addCat").onclick=async()=>{
- const n=prompt("Nombre de la nueva categoría:");
- if(n){await db.from("menu_categories").insert({name:n,sort_order:cats.length*10,active:true});loadAll();}
-};
-
-function renderItems(){
- $("items").innerHTML=cats.map(c=>`<h3>${c.name}</h3>${
-  items.filter(i=>i.category_id===c.id).map(i=>`<div class="item">
-   <div class="row"><div><b>${i.name}</b><br><small>${money(i.price)} · ${i.active?"Visible":"Oculto"} · ${i.sold_out?"AGOTADO":"Disponible"}</small></div>
-   <span><button class="btn alt" onclick="editItem('${i.id}')">Editar</button>
-   <button class="btn alt" onclick="toggleSold('${i.id}')">${i.sold_out?"Quitar agotado":"Marcar agotado"}</button>
-   <button class="btn red" onclick="hideItem('${i.id}')">${i.active?"Ocultar":"Mostrar"}</button></span></div>
-  </div>`).join("")
- }`).join("");
-}
-
-window.editItem=async id=>{
- const i=items.find(x=>x.id===id);
- let n=prompt("Nombre:",i.name);if(n===null)return;
- let p=prompt("Precio:",i.price);if(p===null)return;
- let d=prompt("Descripción (opcional):",i.description||"");if(d===null)return;
- let img=prompt("URL de foto (opcional):",i.image_url||"");if(img===null)return;
- await db.from("menu_items").update({
-  name:n,price:Number(p),description:d,image_url:img,updated_at:new Date().toISOString()
- }).eq("id",id);
- loadAll();
-};
-
-window.toggleSold=async id=>{
- const i=items.find(x=>x.id===id);
- await db.from("menu_items").update({sold_out:!i.sold_out,updated_at:new Date().toISOString()}).eq("id",id);
- loadAll();
-};
-
-window.hideItem=async id=>{
- const i=items.find(x=>x.id===id);
- await db.from("menu_items").update({active:!i.active,updated_at:new Date().toISOString()}).eq("id",id);
- loadAll();
-};
-
-async function renderReservations(){
- const {data}=await db.from("reservations").select("*")
-  .order("reservation_date",{ascending:true})
-  .order("reservation_time",{ascending:true});
- $("reservations").innerHTML=(data||[]).map(r=>`<div class="item">
-  <b>${r.name}</b> · ${r.people} personas<br>
-  ${r.reservation_date} ${String(r.reservation_time).slice(0,5)} · ${r.phone}<br>
-  <small>${r.reason||""} ${r.observations||""}</small><br>
-  <select onchange="statusRes('${r.id}',this.value)">
-   <option ${r.status==="Pendiente"?"selected":""}>Pendiente</option>
-   <option ${r.status==="Confirmada"?"selected":""}>Confirmada</option>
-   <option ${r.status==="Rechazada"?"selected":""}>Rechazada</option>
-  </select>
- </div>`).join("");
-}
-
-window.statusRes=async(id,status)=>{
- await db.from("reservations").update({status}).eq("id",id);
-};
-
-db.auth.onAuthStateChange((event,session)=>{
- if(event==="PASSWORD_RECOVERY"){
-  $("login").classList.add("hidden");$("recovery").classList.remove("hidden");
- }else if(session&&session.user.email&&session.user.email.toLowerCase()===ADMIN&&event!=="PASSWORD_RECOVERY"){
-  showPanel();
- }
-});
-
-db.auth.getSession().then(({data})=>{
- if(data.session&&data.session.user.email&&data.session.user.email.toLowerCase()===ADMIN)showPanel();
-});
-</script>
-</body>
-</html>
+async function loadAll(){let q=await db.from("site_content").select("content").eq("id","main").single();let s=q.data?.content||{};["address","hours","whatsapp","google_maps","pedidos_ya","uber_eats","google_reviews","wifi_name","wifi_password","logo"].forEach(k=>{const map={address:"s_address",hours:"s_hours",whatsapp:"s_whatsapp",google_maps:"s_maps",pedidos_ya:"s_pedidos",uber_eats:"s_uber",google_reviews:"s_reviews",wifi_name:"s_wifi",wifi_password:"s_wifi_pass",logo:"s_logo"};$(map[k]).value=s[k]||""});setPreview("heroPreview",s.hero_image);setPreview("watermarkPreview",s.watermark_image);let c=await db.from("menu_categories").select("*").order("sort_order");cats=c.data||[];let i=await db.from("menu_items").select("*").order("sort_order");items=i.data||[];renderCats();renderItems();renderReservations()}
+$("saveSettings").onclick=async()=>{const q=await db.from("site_content").select("content").eq("id","main").single();const old=q.data?.content||{};const content={...old,address:$("s_address").value,hours:$("s_hours").value,whatsapp:$("s_whatsapp").value.replace(/\D/g,""),google_maps:$("s_maps").value,pedidos_ya:$("s_pedidos").value,uber_eats:$("s_uber").value,google_reviews:$("s_reviews").value,wifi_name:$("s_wifi").value,wifi_password:$("s_wifi_pass").value,logo:$("s_logo").value};const {error}=await db.from("site_content").upsert({id:"main",content,updated_at:new Date().toISOString()});alert(error?error.message:"Configuración guardada.")};
+function renderCats(){$("cats").innerHTML=cats.map((c,idx)=>`<div class="item"><div class="row"><b>${idx+1}. ${c.name}</b><span><button class="btn alt" onclick="moveCat('${c.id}',-1)" ${idx===0?"disabled":""}>↑</button> <button class="btn alt" onclick="moveCat('${c.id}',1)" ${idx===cats.length-1?"disabled":""}>↓</button> <button class="btn alt" onclick="editCat('${c.id}')">Renombrar</button> <button class="btn red" onclick="delCat('${c.id}')">Eliminar</button></span></div></div>`).join("")}
+window.moveCat=async(id,dir)=>{const idx=cats.findIndex(c=>c.id===id),to=idx+dir;if(idx<0||to<0||to>=cats.length)return;const a=cats[idx],b=cats[to],sa=a.sort_order,sb=b.sort_order;const {error}=await db.from("menu_categories").update({sort_order:sb}).eq("id",a.id);if(!error)await db.from("menu_categories").update({sort_order:sa}).eq("id",b.id);await loadAll()}
+window.editCat=async id=>{let c=cats.find(x=>x.id===id),n=prompt("Nombre de la categoría:",c.name);if(n&&n!==c.name){await db.from("menu_categories").update({name:n}).eq("id",id);loadAll()}}
+window.delCat=async id=>{if(confirm("¿Eliminar categoría? Primero debe quedar sin platos.")){const {error}=await db.from("menu_categories").delete().eq("id",id);alert(error?.message||"Categoría eliminada.");loadAll()}}
+$("addCat").onclick=async()=>{let n=prompt("Nombre de la nueva categoría:");if(n){await db.from("menu_categories").insert({name:n,sort_order:cats.length*10,active:true});loadAll()}}
+function renderItems(){$("items").innerHTML=cats.map(c=>`<h3>${c.name}</h3>${items.filter(i=>i.category_id===c.id).map(i=>`<div class="item"><div class="row"><div><b>${i.name}</b><br><small>${money(i.price)} · ${i.active?"Visible":"Oculto"} · ${i.sold_out?"AGOTADO":"Disponible"} · ${i.image_url?"📷 Con foto":"⚠️ Sin foto"}</small></div><span><button class="btn alt" onclick="editItem('${i.id}')">Editar</button><button class="btn" onclick="chooseMenuPhoto('${i.id}')">📷 ${i.image_url?"Cambiar foto":"Subir foto"}</button><button class="btn alt" onclick="toggleSold('${i.id}')">${i.sold_out?"Quitar agotado":"Marcar agotado"}</button><button class="btn red" onclick="hideItem('${i.id}')">${i.active?"Ocultar":"Mostrar"}</button><button class="btn red" onclick="deleteItem('${i.id}')">Eliminar</button></span></div></div>`).join("")}`).join("")}
+async function uploadMenuPhoto(itemId,file){if(!file)return null;if(file.size>5*1024*1024){alert("La imagen debe pesar menos de 5 MB.");return null}const ext=(file.name.split(".").pop()||"jpg").toLowerCase().replace(/[^a-z0-9]/g,"");const path=`${itemId}-${Date.now()}.${ext}`;const {error}=await db.storage.from("menu-images").upload(path,file,{upsert:false});if(error){alert("No se pudo subir la foto: "+error.message);return null}return db.storage.from("menu-images").getPublicUrl(path).data.publicUrl}
+window.chooseMenuPhoto=async id=>{const input=document.createElement("input");input.type="file";input.accept="image/jpeg,image/png,image/webp,image/*";input.style.display="none";input.onchange=async()=>{const file=input.files?.[0];if(!file)return;const url=await uploadMenuPhoto(id,file);if(!url)return;const {error}=await db.from("menu_items").update({image_url:url,updated_at:new Date().toISOString()}).eq("id",id);if(error){alert("La foto se subió, pero no se pudo guardar en el plato: "+error.message);return}await loadAll();alert("Foto del plato guardada correctamente.");};document.body.appendChild(input);input.click();setTimeout(()=>input.remove(),1000)}
+window.editItem=async id=>{let i=items.find(x=>x.id===id),n=prompt("Nombre:",i.name);if(n===null)return;let p=prompt("Precio:",i.price);if(p===null)return;let d=prompt("Descripción (opcional):",i.description||"");if(d===null)return;let replace=confirm("¿Desea subir o cambiar la foto de este plato?\n\nAceptar = elegir una foto desde su computador\nCancelar = conservar la foto actual.");let image=i.image_url||null;if(replace){const input=document.createElement("input");input.type="file";input.accept="image/*";input.onchange=async()=>{const url=await uploadMenuPhoto(id,input.files?.[0]);if(url){image=url;await db.from("menu_items").update({name:n,price:Number(p),description:d,image_url:image,updated_at:new Date().toISOString()}).eq("id",id);await loadAll()}};input.click();return}await db.from("menu_items").update({name:n,price:Number(p),description:d,image_url:image,updated_at:new Date().toISOString()}).eq("id",id);await loadAll()}
+window.toggleSold=async id=>{let i=items.find(x=>x.id===id);await db.from("menu_items").update({sold_out:!i.sold_out,updated_at:new Date().toISOString()}).eq("id",id);loadAll()}
+window.hideItem=async id=>{let i=items.find(x=>x.id===id);await db.from("menu_items").update({active:!i.active,updated_at:new Date().toISOString()}).eq("id",id);loadAll()}
+window.deleteItem=async id=>{const i=items.find(x=>x.id===id);if(!i)return;if(!confirm(`¿Eliminar definitivamente el plato "${i.name}"?\n\nEsta acción no se puede deshacer.`))return;const {error}=await db.from("menu_items").delete().eq("id",id);if(error){alert("No se pudo eliminar el plato: "+error.message);return}await loadAll();alert("Plato eliminado correctamente.")}
+async function renderReservations(){let {data}=await db.from("reservations").select("*").order("reservation_date",{ascending:true}).order("reservation_time",{ascending:true});$("reservations").innerHTML=(data||[]).map(r=>`<div class="item"><b>${r.name}</b> · ${r.people} personas<br>${r.reservation_date} ${String(r.reservation_time).slice(0,5)} · ${r.phone}<br><small>${r.reason||""} ${r.observations||""}</small><br><select onchange="statusRes('${r.id}',this.value)"><option ${r.status==="Pendiente"?"selected":""}>Pendiente</option><option ${r.status==="Confirmada"?"selected":""}>Confirmada</option><option ${r.status==="Rechazada"?"selected":""}>Rechazada</option></select></div>`).join("")}
+window.statusRes=async(id,status)=>{await db.from("reservations").update({status}).eq("id",id)}
+function setPreview(id,url){const el=$(id);if(!el)return;if(url){el.src=url;el.style.display="block"}else{el.removeAttribute("src");el.style.display="none"}}
+async function saveSiteImage(kind,file){if(!file)return;if(file.size>8*1024*1024){alert("La imagen debe pesar menos de 8 MB.");return}const ext=(file.name.split(".").pop()||"jpg").toLowerCase().replace(/[^a-z0-9]/g,"");const path=`${kind}-${Date.now()}.${ext}`;const {error}=await db.storage.from("site-images").upload(path,file,{upsert:false});if(error){alert("No se pudo subir la imagen: "+error.message);return}const url=db.storage.from("site-images").getPublicUrl(path).data.publicUrl;const q=await db.from("site_content").select("content").eq("id","main").single();const content={...(q.data?.content||{}),[kind]:url};const {error:e}=await db.from("site_content").upsert({id:"main",content,updated_at:new Date().toISOString()});if(e){alert("La imagen se subió, pero no se pudo guardar: "+e.message);return}await loadAll();alert("Imagen guardada correctamente.")}
+function pickSiteImage(kind){const input=document.createElement("input");input.type="file";input.accept="image/*";input.onchange=()=>saveSiteImage(kind,input.files?.[0]);input.click()}
+async function clearSiteImage(kind){if(!confirm("¿Eliminar esta imagen?"))return;const q=await db.from("site_content").select("content").eq("id","main").single();const content={...(q.data?.content||{})};delete content[kind];const {error}=await db.from("site_content").upsert({id:"main",content,updated_at:new Date().toISOString()});alert(error?error.message:"Imagen eliminada. Se usará el fondo predeterminado.");if(!error)loadAll()}
+$("uploadHero").onclick=()=>pickSiteImage("hero_image");$("clearHero").onclick=()=>clearSiteImage("hero_image");$("uploadWatermark").onclick=()=>pickSiteImage("watermark_image");$("clearWatermark").onclick=()=>clearSiteImage("watermark_image");
+db.auth.onAuthStateChange((event,session)=>{if(event==="PASSWORD_RECOVERY"){$("login").classList.add("hidden");$("recovery").classList.remove("hidden");}else if(session&&session.user.email&&session.user.email.toLowerCase()===ADMIN&&event!=="PASSWORD_RECOVERY"){showPanel()}});db.auth.getSession().then(({data})=>{if(data.session&&data.session.user.email&&data.session.user.email.toLowerCase()===ADMIN)showPanel()})
+</script></body></html>
