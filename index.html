@@ -381,9 +381,48 @@ main, .menu, .menu-container, .content, .page-content{
 }
 </style>
 
+
+<style id="cart-top-style">
+.cart-fab{
+  display:none;
+  align-items:center;
+  justify-content:center;
+  gap:7px;
+  border:1px solid rgba(13,159,159,.18);
+  border-radius:999px;
+  padding:9px 12px;
+  min-height:42px;
+  background:#fff;
+  color:var(--dark);
+  font:inherit;
+  font-weight:900;
+  cursor:pointer;
+  box-shadow:0 5px 16px rgba(8,63,67,.10);
+  transition:transform .18s ease,box-shadow .18s ease,border-color .18s ease;
+  position:relative;
+  z-index:40;
+}
+.cart-fab.show{display:flex}
+.cart-fab:hover{transform:translateY(-1px);box-shadow:0 8px 20px rgba(8,63,67,.14);border-color:rgba(13,159,159,.35)}
+.cart-icon{font-size:1.05rem;line-height:1}
+.cart-label{font-size:.84rem}
+.cart-count{
+  min-width:22px;height:22px;padding:0 6px;border-radius:999px;
+  display:inline-flex;align-items:center;justify-content:center;
+  background:var(--teal);color:#fff;font-size:.72rem;font-weight:900;line-height:1;
+}
+@media(max-width:650px){
+  .nav{gap:8px;padding:8px 12px}
+  .actions{gap:6px}
+  .cart-fab{padding:8px 9px;min-height:40px}
+  .cart-label{display:none}
+  .cart-icon{font-size:1.08rem}
+  .cart-count{min-width:21px;height:21px}
+}
+</style>
 </head>
 <body>
-<header><div class="nav"><a class="brand" href="#"><img id="logo" src="logo_morros_transparente.png"><span>Morros de Pichilemu</span></a><div class="actions"><a class="btn" href="#reservar">Reservas</a><a id="waTop" class="btn dark" target="_blank">WhatsApp</a></div></div></header>
+<header><div class="nav"><a class="brand" href="#"><img id="logo" src="logo_morros_transparente.png"><span>Morros de Pichilemu</span></a><div class="actions"><button id="cartFab" class="cart-fab" type="button" aria-label="Ver pedido"><span class="cart-icon">🛒</span><span class="cart-label">Mi pedido</span><span id="cartCount" class="cart-count">0</span></button><a class="btn" href="#reservar">Reservas</a><a id="waTop" class="btn dark" target="_blank">WhatsApp</a></div></div></header>
 <main>
 <section class="hero"><div class="hero-content"><img id="heroLogo" class="hero-logo" src="logo_morros_transparente.png"><h1>Sabores del mar<br>que llegan a su mesa</h1><p>Pescados, mariscos y preparaciones de la casa en un ambiente cálido y familiar.</p></div></section>
 <section class="info-bar" aria-label="Accesos rápidos">
@@ -409,7 +448,6 @@ main, .menu, .menu-container, .content, .page-content{
 </form></div></section>
 <section><h2>Visítenos</h2><div class="card"><div class="wifi">📶 Wi-Fi: <b id="wifiName">Perez Perez ltda</b><button class="btn alt" id="copyWifi" type="button">Copiar contraseña</button></div><p style="text-align:center;color:var(--muted)">Conéctese y disfrute de su visita.</p></div></section>
 </main>
-<button id="cartFab" class="cart-fab" type="button" aria-label="Ver pedido">🛒 <span>Mi pedido</span> <span id="cartCount" class="cart-count">0</span></button>
 <div class="dish-modal" id="dishModal" aria-hidden="true"><div class="dish-modal-box" role="dialog" aria-modal="true" aria-labelledby="dishModalName"><button class="dish-modal-close" id="dishModalClose" aria-label="Cerrar">×</button><img class="dish-modal-img" id="dishModalImg" alt=""><div class="dish-modal-body"><div class="dish-modal-name" id="dishModalName"></div><div class="dish-modal-desc" id="dishModalDesc"></div><div class="dish-modal-price" id="dishModalPrice"></div><div id="orderOptions" class="order-options" hidden></div><div id="quantityRow" class="quantity-row"><b>Cantidad</b><div class="qty-controls"><button type="button" id="qtyMinus">−</button><span id="qtyValue">1</span><button type="button" id="qtyPlus">+</button></div></div><div id="orderError" class="order-error" hidden></div><button id="addToOrder" class="add-order-btn" type="button">🛒 Agregar al pedido</button></div></div></div><div class="cart-modal" id="cartModal" aria-hidden="true"><div class="cart-box" role="dialog" aria-modal="true" aria-labelledby="cartTitle"><div class="cart-head"><h3 id="cartTitle">🛒 Mi pedido</h3><button class="cart-close" id="cartClose" type="button" aria-label="Cerrar pedido">×</button></div><div id="cartItems"></div><div id="cartTotal" class="cart-total"></div><button id="cartCheckout" class="cart-checkout" type="button">Continuar con el pedido</button><div class="cart-note">En el siguiente paso podrás elegir retiro o delivery y la forma de pago.</div></div>
 <div class="checkout-modal" id="checkoutModal" aria-hidden="true">
   <div class="checkout-box" role="dialog" aria-modal="true" aria-labelledby="checkoutTitle">
