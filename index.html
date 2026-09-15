@@ -154,6 +154,40 @@ footer{background:var(--dark);color:#fff;padding:32px 18px;text-align:center;mar
 /* Pedido · diseño minimalista */
 .order-options{margin-top:20px;padding-top:4px}.order-options h4{margin:0 0 10px;color:var(--dark);font-size:1rem}.order-options h4 span{display:none}.addon-list{display:grid;grid-template-columns:1fr 1fr;gap:9px}.addon-option{display:flex;align-items:center;justify-content:space-between;gap:10px;border:1px solid var(--line);border-radius:13px;background:#fff;min-height:48px;padding:0 12px;transition:border-color .18s,background .18s,box-shadow .18s}.addon-option:has(input:checked){border-color:var(--teal);background:#f0fbfa;box-shadow:0 0 0 2px rgba(13,159,159,.10)}.addon-option label{display:flex;align-items:center;gap:9px;flex:1;cursor:pointer;font-weight:800;color:var(--ink);font-size:.9rem}.addon-option input{accent-color:var(--teal);width:17px;height:17px;margin:0}.addon-price{font-weight:900;color:var(--teal);font-size:.86rem;white-space:nowrap}.quantity-row{display:flex;align-items:center;justify-content:space-between;margin-top:20px;padding:13px 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line);color:var(--dark)}.qty-controls{display:flex;align-items:center;gap:12px}.qty-controls button{width:38px;height:38px;border:1px solid var(--teal);border-radius:50%;background:#fff;color:var(--teal);font-size:1.25rem;font-weight:900;line-height:1;cursor:pointer;transition:.18s}.qty-controls button:hover{background:var(--teal);color:#fff;transform:scale(1.04)}.qty-controls span{min-width:22px;text-align:center;font-weight:900;font-size:1rem}.add-order-btn{width:100%;margin-top:18px;min-height:50px;border:0;border-radius:14px;background:var(--teal);color:#fff;font-size:1rem;font-weight:900;cursor:pointer;box-shadow:0 7px 20px rgba(13,159,159,.18);transition:transform .18s,box-shadow .18s}.add-order-btn:hover{transform:translateY(-2px);box-shadow:0 10px 25px rgba(13,159,159,.24)}.order-error{margin-top:10px;padding:10px 12px;border-radius:10px;background:#fff3f3;color:#a33;font-weight:800;font-size:.86rem}.dish-main>div:last-child button{background:#fff;color:var(--teal);border:1px solid var(--teal);box-shadow:none;font-weight:900}.dish-main>div:last-child button:hover{background:var(--teal);color:#fff}
 @media(max-width:600px){.addon-list{grid-template-columns:1fr}.addon-option{min-height:50px}.dish-main>div:last-child{margin-top:12px!important}.dish-main>div:last-child button{width:100%;padding:9px 14px!important;border-radius:11px!important}}
+
+/* Checkout de pedidos */
+.checkout-modal{position:fixed;inset:0;z-index:10001;display:none;align-items:center;justify-content:center;padding:14px;background:rgba(8,32,34,.72);backdrop-filter:blur(5px)}
+.checkout-modal.open{display:flex}
+.checkout-box{width:min(760px,96vw);max-height:94vh;overflow:auto;background:#fff;border-radius:24px;box-shadow:0 24px 70px rgba(0,0,0,.28);position:relative}
+.checkout-head{padding:22px 24px 14px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;gap:12px}
+.checkout-head h3{margin:0;color:var(--dark);font-size:1.35rem}
+.checkout-close{width:42px;height:42px;border:0;border-radius:50%;background:#f3f8f7;color:var(--dark);font-size:1.4rem;font-weight:900;cursor:pointer}
+.checkout-body{padding:20px 24px 26px}
+.delivery-choice{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:8px 0 20px}
+.delivery-choice label{cursor:pointer}
+.delivery-choice input{position:absolute;opacity:0;pointer-events:none}
+.delivery-choice span{display:block;border:1px solid var(--line);border-radius:15px;padding:15px;text-align:center;font-weight:900;color:var(--dark);background:#fff;transition:.18s ease}
+.delivery-choice input:checked+span{border-color:var(--teal);background:#eaf8f7;color:var(--dark);box-shadow:0 0 0 2px rgba(13,159,159,.08)}
+.checkout-section-title{font-size:1rem;font-weight:900;color:var(--dark);margin:18px 0 9px}
+.checkout-form{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.checkout-form label{display:block;font-weight:800;color:var(--dark);font-size:.9rem}
+.checkout-form input,.checkout-form select,.checkout-form textarea{width:100%;margin-top:6px;padding:12px 13px;border:1px solid var(--line);border-radius:12px;font:inherit;background:#fff}
+.checkout-form input:focus,.checkout-form select:focus,.checkout-form textarea:focus{outline:none;border-color:var(--teal);box-shadow:0 0 0 3px rgba(13,159,159,.10)}
+.checkout-form textarea{min-height:82px;resize:vertical}
+.checkout-full{grid-column:1/-1}
+.location-row{display:flex;gap:8px;align-items:center;margin-top:6px}
+.location-row input{margin-top:0;flex:1}
+.location-btn{border:1px solid var(--line);background:#f4f9f8;color:var(--dark);border-radius:12px;padding:11px 12px;font-weight:800;cursor:pointer;white-space:nowrap}
+.location-status{font-size:.78rem;color:var(--muted);margin-top:5px}
+.checkout-summary{background:#f7faf9;border:1px solid var(--line);border-radius:16px;padding:14px;margin:8px 0 16px}
+.checkout-summary-row{display:flex;justify-content:space-between;gap:12px;padding:5px 0}
+.checkout-summary-total{border-top:1px solid var(--line);margin-top:7px;padding-top:10px;font-size:1.1rem;font-weight:900;color:var(--dark)}
+.checkout-submit{width:100%;margin-top:16px;border:0;border-radius:14px;background:var(--teal);color:#fff;padding:14px 18px;font:inherit;font-weight:900;cursor:pointer;box-shadow:0 8px 20px rgba(13,159,159,.18)}
+.checkout-submit:disabled{opacity:.55;cursor:not-allowed}
+.checkout-error{color:#a33;background:#fff0f0;border-radius:12px;padding:10px 12px;margin-top:10px;font-weight:700}
+.checkout-success{color:#087b70;background:#edf9f7;border-radius:12px;padding:12px;margin-top:10px;font-weight:800}
+.payment-help{font-size:.8rem;color:var(--muted);margin-top:5px;line-height:1.4}
+@media(max-width:600px){.checkout-box{border-radius:20px;max-height:95vh}.checkout-head{padding:18px}.checkout-body{padding:17px}.checkout-form,.delivery-choice{grid-template-columns:1fr}.checkout-full{grid-column:auto}.location-row{align-items:stretch;flex-direction:column}.location-btn{width:100%}}
 </style>
 <style id="hero-full-width-final">
 html, body {
@@ -377,6 +411,57 @@ main, .menu, .menu-container, .content, .page-content{
 </main>
 <button id="cartFab" class="cart-fab" type="button" aria-label="Ver pedido">🛒 <span>Mi pedido</span> <span id="cartCount" class="cart-count">0</span></button>
 <div class="dish-modal" id="dishModal" aria-hidden="true"><div class="dish-modal-box" role="dialog" aria-modal="true" aria-labelledby="dishModalName"><button class="dish-modal-close" id="dishModalClose" aria-label="Cerrar">×</button><img class="dish-modal-img" id="dishModalImg" alt=""><div class="dish-modal-body"><div class="dish-modal-name" id="dishModalName"></div><div class="dish-modal-desc" id="dishModalDesc"></div><div class="dish-modal-price" id="dishModalPrice"></div><div id="orderOptions" class="order-options" hidden></div><div id="quantityRow" class="quantity-row"><b>Cantidad</b><div class="qty-controls"><button type="button" id="qtyMinus">−</button><span id="qtyValue">1</span><button type="button" id="qtyPlus">+</button></div></div><div id="orderError" class="order-error" hidden></div><button id="addToOrder" class="add-order-btn" type="button">🛒 Agregar al pedido</button></div></div></div><div class="cart-modal" id="cartModal" aria-hidden="true"><div class="cart-box" role="dialog" aria-modal="true" aria-labelledby="cartTitle"><div class="cart-head"><h3 id="cartTitle">🛒 Mi pedido</h3><button class="cart-close" id="cartClose" type="button" aria-label="Cerrar pedido">×</button></div><div id="cartItems"></div><div id="cartTotal" class="cart-total"></div><button id="cartCheckout" class="cart-checkout" type="button">Continuar con el pedido</button><div class="cart-note">En el siguiente paso podrás elegir retiro o delivery y la forma de pago.</div></div>
+<div class="checkout-modal" id="checkoutModal" aria-hidden="true">
+  <div class="checkout-box" role="dialog" aria-modal="true" aria-labelledby="checkoutTitle">
+    <div class="checkout-head">
+      <h3 id="checkoutTitle">Finalizar pedido</h3>
+      <button class="checkout-close" id="checkoutClose" type="button" aria-label="Cerrar">×</button>
+    </div>
+    <div class="checkout-body">
+      <div class="checkout-section-title">¿Cómo quieres recibir tu pedido?</div>
+      <div class="delivery-choice">
+        <label><input type="radio" name="fulfillment" value="retiro" checked><span>🏠 Retiro en restaurante</span></label>
+        <label><input type="radio" name="fulfillment" value="delivery"><span>🚗 Delivery</span></label>
+      </div>
+
+      <div id="checkoutSummary" class="checkout-summary"></div>
+
+      <form id="checkoutForm" class="checkout-form">
+        <div><label>Nombre<input required name="customer_name" autocomplete="name" placeholder="Nombre y apellido"></label></div>
+        <div><label>Teléfono<input required name="phone" type="tel" autocomplete="tel" placeholder="+56 9..."></label></div>
+        <div id="pickupTimeWrap"><label>Hora aproximada de retiro<input name="pickup_time" type="time"></label></div>
+        <div><label>Forma de pago<select required name="payment_method">
+          <option value="">Selecciona una opción</option>
+          <option value="debito">Débito</option>
+          <option value="credito">Crédito</option>
+          <option value="efectivo">Efectivo</option>
+          <option value="transferencia">Transferencia</option>
+        </select></label><div class="payment-help" id="paymentHelp"></div></div>
+
+        <div id="deliveryFields" class="checkout-full" hidden>
+          <div class="checkout-section-title">Datos de entrega</div>
+          <div class="checkout-form">
+            <div class="checkout-full"><label>Dirección<input id="checkoutAddress" name="address" autocomplete="street-address" placeholder="Calle, número y comuna"></label></div>
+            <div class="checkout-full"><label>Referencia<textarea name="reference" placeholder="Casa, departamento, color, punto de referencia, etc."></textarea></label></div>
+            <div class="checkout-full">
+              <label>Ubicación</label>
+              <div class="location-row">
+                <input id="locationText" type="text" readonly placeholder="Opcional: puedes compartir tu ubicación">
+                <button id="locationBtn" class="location-btn" type="button">📍 Usar mi ubicación</button>
+              </div>
+              <div id="locationStatus" class="location-status"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="checkout-full"><label>Observaciones<textarea name="notes" placeholder="Alguna indicación para tu pedido..."></textarea></label></div>
+        <div id="checkoutError" class="checkout-error" hidden></div>
+        <div id="checkoutSuccess" class="checkout-success" hidden></div>
+        <button id="checkoutSubmit" class="checkout-submit" type="submit">Confirmar pedido y continuar por WhatsApp</button>
+      </form>
+    </div>
+  </div>
+</div>
 <script>
 const SUPABASE_URL="https://dodvvywybklwinrulvov.supabase.co";
 const SUPABASE_KEY="sb_publishable_XkqdpRz6lLQFjscnDNrDZw_PMRBQhqC";
@@ -438,7 +523,100 @@ function openDish(item){currentDish=item;currentQty=1;currentAddon=null;const mo
 function closeDish(){const modal=document.getElementById("dishModal");modal.classList.remove("open");modal.setAttribute("aria-hidden","true");document.body.style.overflow=""}
 async function loadMenu(){const {data:cats,error:catError}=await db.from("menu_categories").select("*").eq("active",true).order("sort_order");const {data:items,error:itemError}=await db.from("menu_items").select("*").eq("active",true).order("sort_order");const root=document.getElementById("menuRoot");if(catError||itemError){console.error(catError||itemError);root.innerHTML="<p>No se pudo cargar la carta. Intente actualizar la página.</p>";return}menuItemsCache=items||[];const catBox=document.getElementById("categories");catBox.innerHTML=(cats||[]).map((c,idx)=>`<a href="#cat-${c.id}" class="${idx===0?"active":""}" data-cat="cat-${c.id}">${c.name}</a>`).join("");root.innerHTML=(cats||[]).map(c=>{const list=(items||[]).filter(i=>i.category_id===c.id);return `<section class="menu-section" id="cat-${c.id}"><h2>${c.name}</h2><div class="menu-grid">${list.map((i,idx)=>`<article class="dish" data-dish-id="${i.id}" style="animation-delay:${Math.min(idx,8)*45}ms">${i.image_url?`<img class="dish-photo" src="${i.image_url}" alt="${i.name}">`:``}<div class="dish-main"><div class="dish-name">${i.name}</div>${i.description?`<div class="dish-desc">${i.description}</div>`:""}${i.sold_out?`<div class="sold">AGOTADO</div>`:""}<div class="price">${i.sold_out?"":money(i.price)}</div><div style="margin-top:10px"><button type="button" class="btn" style="padding:8px 12px;font-size:.82rem" ${i.sold_out?"disabled":""}>${i.sold_out?"Agotado":"Ver y pedir"}</button></div></div></article>`).join("")}</div></section>`}).join("");root.querySelectorAll('.dish').forEach(d=>{d.setAttribute('tabindex','0');const item=menuItemsCache.find(i=>i.id===d.dataset.dishId);d.addEventListener('click',e=>{if(e.target.closest('a'))return;openDish(item)});d.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();openDish(item)}})});const catLinks=[...catBox.querySelectorAll("a[data-cat]")];const sections=(cats||[]).map(c=>document.getElementById("cat-"+c.id)).filter(Boolean);let manualCategoryUntil=0;function setActiveCategory(id,center=true){catLinks.forEach(a=>a.classList.toggle("active",a.dataset.cat===id));if(center){const active=catLinks.find(a=>a.dataset.cat===id);if(active){const left=active.offsetLeft-(catBox.clientWidth-active.offsetWidth)/2;catBox.scrollTo({left:Math.max(0,left),behavior:"smooth"})}}}catLinks.forEach(a=>a.addEventListener("click",e=>{e.preventDefault();const id=a.dataset.cat,target=document.getElementById(id);if(!target)return;manualCategoryUntil=Date.now()+900;setActiveCategory(id,true);const header=document.querySelector("header"),headerHeight=header?header.getBoundingClientRect().height:0,categoryHeight=catBox.getBoundingClientRect().height,extraGap=10,top=target.getBoundingClientRect().top+window.scrollY-headerHeight-categoryHeight-extraGap;window.scrollTo({top:Math.max(0,top),behavior:"smooth"})}));if("IntersectionObserver" in window){const io=new IntersectionObserver(entries=>{if(Date.now()<manualCategoryUntil)return;const visible=entries.filter(e=>e.isIntersecting).sort((a,b)=>b.intersectionRatio-a.intersectionRatio)[0];if(visible)setActiveCategory(visible.target.id,true)},{root:null,rootMargin:"-135px 0px -58% 0px",threshold:[0.08,0.2,0.4,0.65]});sections.forEach(sec=>io.observe(sec))}}
 
-document.getElementById("dishModalClose").addEventListener("click",closeDish);document.getElementById("dishModal").addEventListener("click",e=>{if(e.target.id==="dishModal")closeDish()});document.getElementById("qtyMinus").addEventListener("click",()=>{currentQty=Math.max(1,currentQty-1);document.getElementById("qtyValue").textContent=currentQty});document.getElementById("qtyPlus").addEventListener("click",()=>{currentQty=Math.min(20,currentQty+1);document.getElementById("qtyValue").textContent=currentQty});document.getElementById("addToOrder").addEventListener("click",()=>{if(!currentDish||currentDish.sold_out)return;if(requiresAddon(currentDish)&&!currentAddon){const e=document.getElementById("orderError");e.textContent="Selecciona un agregado para continuar.";e.hidden=false;return}const addon=currentAddon?.name||"",addonPrice=currentAddon?.price||0;const existing=orderCart.find(x=>x.id===currentDish.id&&x.addon===addon);if(existing)existing.qty+=currentQty;else orderCart.push({id:currentDish.id,name:currentDish.name,price:Number(currentDish.price)||0,qty:currentQty,addon,addonPrice});updateCartUI();closeDish();openCart()});document.getElementById("cartFab").addEventListener("click",openCart);document.getElementById("cartClose").addEventListener("click",closeCart);document.getElementById("cartModal").addEventListener("click",e=>{if(e.target.id==="cartModal")closeCart()});document.getElementById("cartItems").addEventListener("click",e=>{const b=e.target.closest("button[data-cart-action]");if(!b)return;const i=Number(b.dataset.index),action=b.dataset.cartAction;if(!orderCart[i])return;if(action==="minus")orderCart[i].qty=Math.max(1,orderCart[i].qty-1);if(action==="plus")orderCart[i].qty=Math.min(20,orderCart[i].qty+1);if(action==="remove")orderCart.splice(i,1);updateCartUI()});document.getElementById("cartCheckout").addEventListener("click",()=>{alert("La siguiente etapa será el formulario de retiro o delivery, datos del cliente y forma de pago. El carrito ya está listo.")});
+document.getElementById("dishModalClose").addEventListener("click",closeDish);document.getElementById("dishModal").addEventListener("click",e=>{if(e.target.id==="dishModal")closeDish()});document.getElementById("qtyMinus").addEventListener("click",()=>{currentQty=Math.max(1,currentQty-1);document.getElementById("qtyValue").textContent=currentQty});document.getElementById("qtyPlus").addEventListener("click",()=>{currentQty=Math.min(20,currentQty+1);document.getElementById("qtyValue").textContent=currentQty});document.getElementById("addToOrder").addEventListener("click",()=>{if(!currentDish||currentDish.sold_out)return;if(requiresAddon(currentDish)&&!currentAddon){const e=document.getElementById("orderError");e.textContent="Selecciona un agregado para continuar.";e.hidden=false;return}const addon=currentAddon?.name||"",addonPrice=currentAddon?.price||0;const existing=orderCart.find(x=>x.id===currentDish.id&&x.addon===addon);if(existing)existing.qty+=currentQty;else orderCart.push({id:currentDish.id,name:currentDish.name,price:Number(currentDish.price)||0,qty:currentQty,addon,addonPrice});updateCartUI();closeDish();openCart()});document.getElementById("cartFab").addEventListener("click",openCart);document.getElementById("cartClose").addEventListener("click",closeCart);document.getElementById("cartModal").addEventListener("click",e=>{if(e.target.id==="cartModal")closeCart()});document.getElementById("cartItems").addEventListener("click",e=>{const b=e.target.closest("button[data-cart-action]");if(!b)return;const i=Number(b.dataset.index),action=b.dataset.cartAction;if(!orderCart[i])return;if(action==="minus")orderCart[i].qty=Math.max(1,orderCart[i].qty-1);if(action==="plus")orderCart[i].qty=Math.min(20,orderCart[i].qty+1);if(action==="remove")orderCart.splice(i,1);updateCartUI()});
+function orderTotal(){return orderCart.reduce((n,x)=>n+(x.price+x.addonPrice)*x.qty,0)}
+function renderCheckoutSummary(){
+  const box=document.getElementById("checkoutSummary");
+  box.innerHTML=orderCart.map(x=>`<div class="checkout-summary-row"><span>${x.qty} × ${x.name}${x.addon?`<small style="display:block;color:var(--muted)">Agregado: ${x.addon}</small>`:""}</span><b>${money((x.price+x.addonPrice)*x.qty)}</b></div>`).join("")+
+    `<div class="checkout-summary-row checkout-summary-total"><span>Total</span><span>${money(orderTotal())}</span></div>`;
+}
+function openCheckout(){
+  if(!orderCart.length)return;
+  closeCart();
+  renderCheckoutSummary();
+  document.getElementById("checkoutModal").classList.add("open");
+  document.getElementById("checkoutModal").setAttribute("aria-hidden","false");
+  document.body.style.overflow="hidden";
+  document.getElementById("checkoutError").hidden=true;
+  document.getElementById("checkoutSuccess").hidden=true;
+}
+function closeCheckout(){
+  document.getElementById("checkoutModal").classList.remove("open");
+  document.getElementById("checkoutModal").setAttribute("aria-hidden","true");
+  document.body.style.overflow="";
+}
+function updateFulfillmentUI(){
+  const type=document.querySelector('input[name="fulfillment"]:checked')?.value||"retiro";
+  const delivery=document.getElementById("deliveryFields");
+  const address=document.getElementById("checkoutAddress");
+  delivery.hidden=type!=="delivery";
+  address.required=type==="delivery";
+  document.getElementById("pickupTimeWrap").hidden=type!=="retiro";
+}
+document.getElementById("cartCheckout").addEventListener("click",openCheckout);
+document.getElementById("checkoutClose").addEventListener("click",closeCheckout);
+document.getElementById("checkoutModal").addEventListener("click",e=>{if(e.target.id==="checkoutModal")closeCheckout()});
+document.querySelectorAll('input[name="fulfillment"]').forEach(r=>r.addEventListener("change",updateFulfillmentUI));
+document.querySelector('select[name="payment_method"]').addEventListener("change",e=>{
+  document.getElementById("paymentHelp").textContent=e.target.value==="transferencia"?"Te enviaremos los datos de transferencia por WhatsApp para confirmar el pedido.":"";
+});
+let customerLocation={latitude:null,longitude:null};
+document.getElementById("locationBtn").addEventListener("click",()=>{
+  const status=document.getElementById("locationStatus");
+  if(!navigator.geolocation){status.textContent="Tu navegador no permite compartir ubicación.";return}
+  status.textContent="Obteniendo ubicación...";
+  navigator.geolocation.getCurrentPosition(pos=>{
+    customerLocation={latitude:pos.coords.latitude,longitude:pos.coords.longitude};
+    document.getElementById("locationText").value=`Ubicación compartida (${pos.coords.latitude.toFixed(5)}, ${pos.coords.longitude.toFixed(5)})`;
+    status.textContent="Ubicación guardada para este pedido.";
+  },()=>{status.textContent="No pudimos obtener tu ubicación. Puedes continuar ingresando la dirección.";},{enableHighAccuracy:true,timeout:10000,maximumAge:60000});
+});
+document.getElementById("checkoutForm").addEventListener("submit",async e=>{
+  e.preventDefault();
+  if(!orderCart.length)return;
+  const f=new FormData(e.target);
+  const fulfillment=f.get("fulfillment")||document.querySelector('input[name="fulfillment"]:checked')?.value||"retiro";
+  const payment=f.get("payment_method");
+  const customerName=String(f.get("customer_name")||"").trim();
+  const phone=String(f.get("phone")||"").trim();
+  const address=String(f.get("address")||"").trim();
+  if(fulfillment==="delivery"&&!address){
+    const er=document.getElementById("checkoutError");er.textContent="Ingresa la dirección de entrega para continuar.";er.hidden=false;return;
+  }
+  const submit=document.getElementById("checkoutSubmit");
+  const errorBox=document.getElementById("checkoutError");
+  const successBox=document.getElementById("checkoutSuccess");
+  errorBox.hidden=true;successBox.hidden=true;submit.disabled=true;submit.textContent="Enviando pedido...";
+  const items=orderCart.map(x=>({id:x.id,name:x.name,qty:x.qty,price:x.price,addon:x.addon||null,addon_price:x.addonPrice||0,line_total:(x.price+x.addonPrice)*x.qty}));
+  const total=orderTotal();
+  const {data,error}=await db.from("orders").insert({
+    customer_name:customerName,phone,fulfillment_type:fulfillment,address:fulfillment==="delivery"?address:null,
+    reference:fulfillment==="delivery"?String(f.get("reference")||"").trim():null,
+    latitude:fulfillment==="delivery"?customerLocation.latitude:null,
+    longitude:fulfillment==="delivery"?customerLocation.longitude:null,
+    payment_method:payment,pickup_time:fulfillment==="retiro"?String(f.get("pickup_time")||"").trim():null,
+    notes:String(f.get("notes")||"").trim(),items,total,status:"recibido"
+  }).select("id").single();
+  if(error){
+    errorBox.textContent="No pudimos registrar el pedido. Puedes intentarlo nuevamente.";errorBox.hidden=false;submit.disabled=false;submit.textContent="Confirmar pedido y continuar por WhatsApp";return;
+  }
+  const orderNumber=data?.id?data.id.slice(0,8).toUpperCase():"";
+  const itemLines=items.map(x=>`• ${x.qty} × ${x.name}${x.addon?` — Agregado: ${x.addon}`:""}${x.addon_price?` (+${money(x.addon_price)})`:""} — ${money(x.line_total)}`).join("\n");
+  const paymentLabel={debito:"Débito",credito:"Crédito",efectivo:"Efectivo",transferencia:"Transferencia"}[payment]||payment;
+  let text=`🍽️ NUEVO PEDIDO – MORROS DE PICHILEMU\n\nPedido #${orderNumber}\n👤 Cliente: ${customerName}\n📱 Teléfono: ${phone}\n${fulfillment==="delivery"?"🚗 Delivery":"🏠 Retiro en restaurante"}\n`;
+  if(fulfillment==="delivery"){text+=`📍 Dirección: ${address}\n`;if(f.get("reference"))text+=`📌 Referencia: ${String(f.get("reference")).trim()}\n`;if(customerLocation.latitude)text+=`🗺️ Ubicación: https://maps.google.com/?q=${customerLocation.latitude},${customerLocation.longitude}\n`;}
+  if(fulfillment==="retiro"&&f.get("pickup_time"))text+=`🕐 Hora aproximada: ${f.get("pickup_time")}\n`;
+  text+=`\n🧾 PEDIDO\n${itemLines}\n\n💰 TOTAL: ${money(total)}\n💳 Forma de pago: ${paymentLabel}`;
+  if(f.get("notes"))text+=`\n📝 Observaciones: ${String(f.get("notes")).trim()}`;
+  text+=`\n\nPor favor confirmar recepción del pedido.`;
+  successBox.textContent="Pedido registrado. Se abrirá WhatsApp para enviarlo al restaurante.";
+  successBox.hidden=false;
+  window.open(waLink(text),"_blank");
+  orderCart=[];updateCartUI();e.target.reset();customerLocation={latitude:null,longitude:null};document.getElementById("locationText").value="";document.getElementById("locationStatus").textContent="";
+  setTimeout(()=>{closeCheckout();submit.disabled=false;submit.textContent="Confirmar pedido y continuar por WhatsApp";},700);
+});
+updateFulfillmentUI();
+
 document.getElementById("reservationForm").addEventListener("submit",async e=>{e.preventDefault();const f=new FormData(e.target),r={name:f.get("name"),phone:f.get("phone"),reservation_date:f.get("date"),reservation_time:f.get("time"),people:Number(f.get("people")),reason:f.get("reason"),observations:f.get("observations"),status:"Pendiente"};const {error}=await db.from("reservations").insert(r);const text=`Hola, quiero reservar en Restaurante Morros de Pichilemu.%0A%0ANombre: ${r.name}%0ATeléfono: ${r.phone}%0AFecha: ${r.reservation_date}%0AHora: ${r.reservation_time}%0APersonas: ${r.people}%0ACelebración: ${r.reason||"No"}%0AObservaciones: ${r.observations||"Ninguna"}`;if(error){document.getElementById("reserveMsg").innerHTML='<p style="color:#a33">No se pudo guardar la reserva. Puede enviarla por WhatsApp.</p>'}else{document.getElementById("reserveMsg").innerHTML='<p style="color:#087b70;font-weight:700">Reserva recibida. Ahora se abrirá WhatsApp para enviar los datos.</p>';window.open("https://wa.me/"+settings.whatsapp+"?text="+text,"_blank");e.target.reset()}})
 document.getElementById("copyWifi").onclick=()=>navigator.clipboard?.writeText(settings.wifi_password).then(()=>alert("Contraseña copiada"));
 document.addEventListener("keydown",e=>{if(e.key==="Escape"){closeDish();closeCart()}});
