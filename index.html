@@ -204,6 +204,11 @@ html, body {
 
 
 <style id="mobile-scroll-fix-v2">
+:root{
+  --header-height:72px;
+  --categories-height:50px;
+}
+
 html, body{
   width:100%;
   max-width:100%;
@@ -213,18 +218,21 @@ html, body{
 
 .categories{
   position:sticky !important;
-  top:0 !important;
-  z-index:9999 !important;
+  top:var(--header-height) !important;
+  z-index:40 !important;
   width:100% !important;
   max-width:100% !important;
   box-sizing:border-box !important;
+  display:flex !important;
   overflow-x:auto !important;
   overflow-y:hidden !important;
   -webkit-overflow-scrolling:touch;
   overscroll-behavior-x:contain;
-  touch-action:pan-x;
+  touch-action:auto;
   isolation:isolate;
   background:rgba(255,255,255,.98);
+  backdrop-filter:blur(8px);
+  -webkit-backdrop-filter:blur(8px);
   box-shadow:0 3px 12px rgba(0,0,0,.08);
 }
 
@@ -233,23 +241,85 @@ html, body{
 }
 
 .menu-section{
-  scroll-margin-top:80px !important;
-}
-
-@media(max-width:700px){
-  .categories{
-    top:0 !important;
-    padding-top:8px !important;
-    padding-bottom:10px !important;
-  }
-  .menu-section{
-    scroll-margin-top:78px !important;
-  }
+  scroll-margin-top:calc(var(--header-height) + var(--categories-height) + 10px) !important;
 }
 
 /* Evita que un contenedor intermedio corte el sticky */
 main, .menu, .menu-container, .content, .page-content{
   overflow:visible !important;
+}
+
+@media(max-width:700px){
+  .categories{
+    top:var(--header-height) !important;
+    padding-top:8px !important;
+    padding-bottom:10px !important;
+  }
+
+  .menu-section{
+    scroll-margin-top:calc(var(--header-height) + var(--categories-height) + 10px) !important;
+  }
+}
+</style>
+
+<style id="back-to-top">
+#backToTop{
+  position:fixed;
+  right:18px;
+  bottom:18px;
+  width:48px;
+  height:48px;
+  border:0;
+  border-radius:50%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:var(--teal);
+  color:#fff;
+  font-size:1.5rem;
+  font-weight:900;
+  line-height:1;
+  cursor:pointer;
+  z-index:10000;
+  opacity:0;
+  visibility:hidden;
+  pointer-events:none;
+  transform:translateY(10px);
+  transition:opacity .25s ease,transform .25s ease,visibility .25s ease,background .2s ease;
+  box-shadow:0 8px 22px rgba(8,63,67,.25);
+}
+
+#backToTop.show{
+  opacity:1;
+  visibility:visible;
+  pointer-events:auto;
+  transform:translateY(0);
+}
+
+#backToTop:hover{
+  background:var(--dark);
+  transform:translateY(-2px);
+}
+
+#backToTop:focus-visible{
+  outline:3px solid rgba(13,159,159,.35);
+  outline-offset:3px;
+}
+
+@media(max-width:650px){
+  #backToTop{
+    right:14px;
+    bottom:16px;
+    width:46px;
+    height:46px;
+    font-size:1.4rem;
+  }
+}
+
+@media(prefers-reduced-motion:reduce){
+  #backToTop{
+    transition:none;
+  }
 }
 </style>
 
@@ -393,15 +463,45 @@ loadSettings();loadMenu();
 
 <script id="sticky-category-height-fix">
 (function(){
+  const header=document.querySelector("header");
   const catBar=document.querySelector(".categories");
-  if(!catBar) return;
-  const updateOffset=()=>{
-    const h=catBar.getBoundingClientRect().height;
-    document.documentElement.style.setProperty("--categories-height", h+"px");
+
+  const updateOffsets=()=>{
+    const headerHeight=header ? header.getBoundingClientRect().height : 0;
+    const categoryHeight=catBar ? catBar.getBoundingClientRect().height : 0;
+
+    document.documentElement.style.setProperty("--header-height", headerHeight+"px");
+    document.documentElement.style.setProperty("--categories-height", categoryHeight+"px");
   };
-  updateOffset();
-  window.addEventListener("resize", updateOffset, {passive:true});
+
+  updateOffsets();
+  window.addEventListener("resize", updateOffsets, {passive:true});
+
+  if("ResizeObserver" in window){
+    if(header) new ResizeObserver(updateOffsets).observe(header);
+    if(catBar) new ResizeObserver(updateOffsets).observe(catBar);
+  }
 })();
 </script>
 
+
+<button id="backToTop" type="button" aria-label="Volver arriba" title="Volver arriba">↑</button>
+
+<script id="back-to-top-script">
+(function(){
+  const backToTop=document.getElementById("backToTop");
+  if(!backToTop) return;
+
+  const updateBackToTop=()=>{
+    backToTop.classList.toggle("show", window.scrollY > 450);
+  };
+
+  window.addEventListener("scroll", updateBackToTop, {passive:true});
+  updateBackToTop();
+
+  backToTop.addEventListener("click",()=>{
+    window.scrollTo({top:0, behavior:"smooth"});
+  });
+})();
+</script>
 </body></html>
