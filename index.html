@@ -683,31 +683,40 @@ document.getElementById("checkoutForm").addEventListener("submit",async e=>{
   if(fulfillment==="delivery"&&!address){
     const er=document.getElementById("checkoutError");er.textContent="Ingresa la dirección de entrega para continuar.";er.hidden=false;return;
   }
+  if(fulfillment==="delivery"&&!['efectivo','transferencia'].includes(payment)){
+    const er=document.getElementById("checkoutError");er.textContent="Para delivery solo aceptamos efectivo o transferencia.";er.hidden=false;return;
+  }
   const submit=document.getElementById("checkoutSubmit");
   const errorBox=document.getElementById("checkoutError");
   const successBox=document.getElementById("checkoutSuccess");
   errorBox.hidden=true;successBox.hidden=true;submit.disabled=true;submit.textContent="Enviando pedido...";
   const items=orderCart.map(x=>({id:x.id,name:x.name,qty:x.qty,price:x.price,addon:x.addon||null,addon_price:x.addonPrice||0,line_total:(x.price+x.addonPrice)*x.qty}));
   const total=orderTotal();
-  const {data,error}=await db.from("orders").insert({
-    customer_name:customerName,phone,fulfillment_type:fulfillment,address:fulfillment==="delivery"?address:null,
+
+  // Generamos el ID desde el navegador para no necesitar permiso público de lectura en orders.
+  // Así el cliente puede crear el pedido sin exponer los pedidos anteriores.
+  const orderId=crypto.randomUUID();
+  const {error}=await db.from("orders").insert({
+    id:orderId,customer_name:customerName,phone,fulfillment_type:fulfillment,address:fulfillment==="delivery"?address:null,
     reference:fulfillment==="delivery"?String(f.get("reference")||"").trim():null,
     latitude:fulfillment==="delivery"?customerLocation.latitude:null,
     longitude:fulfillment==="delivery"?customerLocation.longitude:null,
     payment_method:payment,pickup_time:fulfillment==="retiro"?String(f.get("pickup_time")||"").trim():null,
     notes:String(f.get("notes")||"").trim(),items,total,status:"recibido"
-  }).select("id").single();
+  });
   if(error){
+    console.error("Error registrando pedido:",error);
     errorBox.textContent="No pudimos registrar el pedido. Puedes intentarlo nuevamente.";errorBox.hidden=false;submit.disabled=false;submit.textContent="Confirmar pedido y continuar por WhatsApp";return;
   }
-  const orderNumber=data?.id?data.id.slice(0,8).toUpperCase():"";
+  const orderNumber=orderId.slice(0,8).toUpperCase();
   const itemLines=items.map(x=>`• ${x.qty} × ${x.name}${x.addon?` — Agregado: ${x.addon}`:""}${x.addon_price?` (+${money(x.addon_price)})`:""} — ${money(x.line_total)}`).join("\n");
   const paymentLabel={debito:"Débito",credito:"Crédito",efectivo:"Efectivo",transferencia:"Transferencia"}[payment]||payment;
-  let text=`🍽️ NUEVO PEDIDO – MORROS DE PICHILEMU\n\nPedido #${orderNumber}\n👤 Cliente: ${customerName}\n📱 Teléfono: ${phone}\n${fulfillment==="delivery"?"🚗 Delivery":"🏠 Retiro en restaurante"}\n`;
-  if(fulfillment==="delivery"){text+=`📍 Dirección: ${address}\n`;if(f.get("reference"))text+=`📌 Referencia: ${String(f.get("reference")).trim()}\n`;if(customerLocation.latitude)text+=`🗺️ Ubicación: https://maps.google.com/?q=${customerLocation.latitude},${customerLocation.longitude}\n`;}
-  if(fulfillment==="retiro"&&f.get("pickup_time"))text+=`🕐 Hora aproximada: ${f.get("pickup_time")}\n`;
-  text+=`\n🧾 PEDIDO\n${itemLines}\n\n💰 TOTAL: ${money(total)}\n💳 Forma de pago: ${paymentLabel}`;
-  if(f.get("notes"))text+=`\n📝 Observaciones: ${String(f.get("notes")).trim()}`;
+  // Usamos símbolos simples y compatibles con WhatsApp para evitar caracteres de emoji rotos.
+  let text=`MORROS DE PICHILEMU — NUEVO PEDIDO\n\nPedido #${orderNumber}\n• Cliente: ${customerName}\n☎ Teléfono: ${phone}\n${fulfillment==="delivery"?"▸ DELIVERY":"⌂ RETIRO EN RESTAURANTE"}\n`;
+  if(fulfillment==="delivery"){text+=`⌖ Dirección: ${address}\n`;if(f.get("reference"))text+=`• Referencia: ${String(f.get("reference")).trim()}\n`;if(customerLocation.latitude)text+=`⌖ Ubicación: https://maps.google.com/?q=${customerLocation.latitude},${customerLocation.longitude}\n`;}
+  if(fulfillment==="retiro"&&f.get("pickup_time"))text+=`• Hora aproximada: ${f.get("pickup_time")}\n`;
+  text+=`\n▣ PEDIDO\n${itemLines}\n\nTOTAL: ${money(total)}\nForma de pago: ${paymentLabel}`;
+  if(f.get("notes"))text+=`\n• Observaciones: ${String(f.get("notes")).trim()}`;
   text+=`\n\nPor favor confirmar recepción del pedido.`;
   successBox.textContent="Pedido registrado. Se abrirá WhatsApp para enviarlo al restaurante.";
   successBox.hidden=false;
