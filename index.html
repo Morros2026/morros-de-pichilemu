@@ -708,15 +708,21 @@ document.getElementById("checkoutForm").addEventListener("submit",async e=>{
     console.error("Error registrando pedido:",error);
     errorBox.textContent="No pudimos registrar el pedido. Puedes intentarlo nuevamente.";errorBox.hidden=false;submit.disabled=false;submit.textContent="Confirmar pedido y continuar por WhatsApp";return;
   }
-  const orderNumber=orderId.slice(0,8).toUpperCase();
+  // Código visible del pedido: mantiene la referencia OT90 y agrega un identificador corto para distinguir cada pedido de prueba.
+  const orderNumber=`OT90-${orderId.slice(0,4).toUpperCase()}`;
   const itemLines=items.map(x=>`• ${x.qty} × ${x.name}${x.addon?` — Agregado: ${x.addon}`:""}${x.addon_price?` (+${money(x.addon_price)})`:""} — ${money(x.line_total)}`).join("\n");
   const paymentLabel={debito:"Débito",credito:"Crédito",efectivo:"Efectivo",transferencia:"Transferencia"}[payment]||payment;
-  // Usamos símbolos simples y compatibles con WhatsApp para evitar caracteres de emoji rotos.
-  let text=`MORROS DE PICHILEMU — NUEVO PEDIDO\n\nPedido #${orderNumber}\n• Cliente: ${customerName}\n☎ Teléfono: ${phone}\n${fulfillment==="delivery"?"▸ DELIVERY":"⌂ RETIRO EN RESTAURANTE"}\n`;
-  if(fulfillment==="delivery"){text+=`⌖ Dirección: ${address}\n`;if(f.get("reference"))text+=`• Referencia: ${String(f.get("reference")).trim()}\n`;if(customerLocation.latitude)text+=`⌖ Ubicación: https://maps.google.com/?q=${customerLocation.latitude},${customerLocation.longitude}\n`;}
-  if(fulfillment==="retiro"&&f.get("pickup_time"))text+=`• Hora aproximada: ${f.get("pickup_time")}\n`;
-  text+=`\n▣ PEDIDO\n${itemLines}\n\nTOTAL: ${money(total)}\nForma de pago: ${paymentLabel}`;
-  if(f.get("notes"))text+=`\n• Observaciones: ${String(f.get("notes")).trim()}`;
+
+  // Mensaje pensado para WhatsApp: etiquetas importantes en negrita y sin emojis para evitar problemas de compatibilidad.
+  let text=`*MORROS DE PICHILEMU — NUEVO PEDIDO*\n\n*Pedido:* #${orderNumber}\n*Cliente:* ${customerName}\n*Teléfono:* ${phone}\n*${fulfillment==="delivery"?"Delivery":"Retiro en restaurante"}*\n`;
+  if(fulfillment==="delivery"){
+    text+=`*Dirección:* ${address}\n`;
+    if(f.get("reference"))text+=`*Referencia:* ${String(f.get("reference")).trim()}\n`;
+    if(customerLocation.latitude)text+=`*Ubicación:* https://maps.google.com/?q=${customerLocation.latitude},${customerLocation.longitude}\n`;
+  }
+  if(fulfillment==="retiro"&&f.get("pickup_time"))text+=`*Hora aproximada:* ${f.get("pickup_time")}\n`;
+  text+=`\n*PEDIDO*\n${itemLines}\n\n*TOTAL:* ${money(total)}\n*Forma de pago:* ${paymentLabel}`;
+  if(f.get("notes"))text+=`\n*Observaciones:* ${String(f.get("notes")).trim()}`;
   text+=`\n\nPor favor confirmar recepción del pedido.`;
   successBox.textContent="Pedido registrado. Se abrirá WhatsApp para enviarlo al restaurante.";
   successBox.hidden=false;
