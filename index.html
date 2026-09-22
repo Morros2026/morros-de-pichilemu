@@ -715,8 +715,12 @@ document.getElementById("checkoutForm").addEventListener("submit",async e=>{
   }
   const orderNumber=`MP${String(nextNumber).padStart(4,"0")}`;
   const itemLines=items.map(x=>{
-    const base=`• ${x.qty} × ${x.name} — ${money(x.line_total)}`;
-    return x.addon?`${base}\n   - *Agregado:* ${x.addon}${x.addon_price?` (+${money(x.addon_price)})`:""}`:base;
+    const dishTotal=x.price*x.qty;
+    const addonTotal=x.addon_price*x.qty;
+    if(x.addon){
+      return `• ${x.qty} × ${x.name} — *Plato:* ${money(dishTotal)}\n   - *Agregado:* ${x.addon} — ${money(addonTotal)}\n   - *Total ítem:* ${money(x.line_total)}`;
+    }
+    return `• ${x.qty} × ${x.name} — *Plato:* ${money(dishTotal)}`;
   }).join("\n");
   const paymentLabel={debito:"Débito",credito:"Crédito",efectivo:"Efectivo",transferencia:"Transferencia"}[payment]||payment;
 
