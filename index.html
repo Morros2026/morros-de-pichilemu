@@ -693,11 +693,16 @@ document.getElementById("checkoutForm").addEventListener("submit",async e=>{
   const items=orderCart.map(x=>({id:x.id,name:x.name,qty:x.qty,price:x.price,addon:x.addon||null,addon_price:x.addonPrice||0,line_total:(x.price+x.addonPrice)*x.qty}));
   const total=orderTotal();
 
-  // Generamos el ID desde el navegador para no necesitar permiso público de lectura en orders.
-  // Así el cliente puede crear el pedido sin exponer los pedidos anteriores.
+  // Conseguimos un número consecutivo seguro desde Supabase.
+  // El primer pedido real de la web será MP0001, luego MP0002, MP0003, etc.
+  const {data:nextNumber,error:numberError}=await db.rpc("get_next_online_order_number");
+  if(numberError || !Number.isFinite(Number(nextNumber))){
+    console.error("Error obteniendo número de pedido:",numberError);
+    errorBox.textContent="No pudimos asignar el número del pedido. Puedes intentarlo nuevamente.";errorBox.hidden=false;submit.disabled=false;submit.textContent="Confirmar pedido y continuar por WhatsApp";return;
+  }
   const orderId=crypto.randomUUID();
   const {error}=await db.from("orders").insert({
-    id:orderId,customer_name:customerName,phone,fulfillment_type:fulfillment,address:fulfillment==="delivery"?address:null,
+    id:orderId,online_order_number:Number(nextNumber),customer_name:customerName,phone,fulfillment_type:fulfillment,address:fulfillment==="delivery"?address:null,
     reference:fulfillment==="delivery"?String(f.get("reference")||"").trim():null,
     latitude:fulfillment==="delivery"?customerLocation.latitude:null,
     longitude:fulfillment==="delivery"?customerLocation.longitude:null,
@@ -708,9 +713,11 @@ document.getElementById("checkoutForm").addEventListener("submit",async e=>{
     console.error("Error registrando pedido:",error);
     errorBox.textContent="No pudimos registrar el pedido. Puedes intentarlo nuevamente.";errorBox.hidden=false;submit.disabled=false;submit.textContent="Confirmar pedido y continuar por WhatsApp";return;
   }
-  // Código visible del pedido: mantiene la referencia OT90 y agrega un identificador corto para distinguir cada pedido de prueba.
-  const orderNumber=`OT90-${orderId.slice(0,4).toUpperCase()}`;
-  const itemLines=items.map(x=>`• ${x.qty} × ${x.name}${x.addon?` — Agregado: ${x.addon}`:""}${x.addon_price?` (+${money(x.addon_price)})`:""} — ${money(x.line_total)}`).join("\n");
+  const orderNumber=`MP${String(nextNumber).padStart(4,"0")}`;
+  const itemLines=items.map(x=>{
+    const base=`• ${x.qty} × ${x.name} — ${money(x.line_total)}`;
+    return x.addon?`${base}\n   - *Agregado:* ${x.addon}${x.addon_price?` (+${money(x.addon_price)})`:""}`:base;
+  }).join("\n");
   const paymentLabel={debito:"Débito",credito:"Crédito",efectivo:"Efectivo",transferencia:"Transferencia"}[payment]||payment;
 
   // Mensaje pensado para WhatsApp: etiquetas importantes en negrita y sin emojis para evitar problemas de compatibilidad.
