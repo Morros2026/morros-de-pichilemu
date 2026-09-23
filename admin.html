@@ -24,6 +24,11 @@ small{color:#667}.hidden{display:none}
 .day-row input[type=time]{width:100%;padding:9px;border:1px solid var(--line);border-radius:8px}
 .note{margin-top:10px}
 .orders-toolbar{display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap;margin-bottom:12px}
+
+.notify-settings{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:10px}
+.notify-dot{width:9px;height:9px;border-radius:50%;display:inline-block;background:#b8c4c4}
+.notify-dot.on{background:#0d9f9f}
+.notify-note{font-size:.86rem;color:#667}
 .orders-badge{display:inline-flex;align-items:center;gap:7px;background:#fff3f3;color:#a33;border:1px solid #f0caca;border-radius:999px;padding:7px 11px;font-weight:700}
 .order-card{border:1px solid var(--line);border-radius:14px;padding:14px;margin:10px 0;background:#fff}
 .order-card.new{border-left:5px solid var(--t)}
@@ -129,9 +134,17 @@ small{color:#667}.hidden{display:none}
   <div class="row" style="gap:8px">
    <span id="newOrdersBadge" class="orders-badge hidden">● <span id="newOrdersCount">0</span> nuevos</span>
    <button class="btn alt" id="refreshOrders" type="button">Actualizar</button>
+   <button class="btn alt" id="enableNotifications" type="button">Activar avisos</button>
+
   </div>
  </div>
+ 
+ <div class="notify-settings">
+  <span id="notifyDot" class="notify-dot"></span>
+  <span id="notifyStatus" class="notify-note">Avisos sonoros y de navegador desactivados.</span>
+ </div>
  <div id="orders"></div>
+
 </div>
 
 <div class="card">
@@ -366,6 +379,83 @@ function orderItemsHtml(items){
  }).join("")+"</ul>";
 }
 
+
+let notificationReady=false;
+let audioContext=null;
+let lastKnownOrderIds=new Set();
+let firstOrdersLoad=true;
+
+function setupAudio(){
+ try{
+  audioContext=audioContext || new (window.AudioContext||window.webkitAudioContext)();
+  if(audioContext.state==="suspended") audioContext.resume();
+  notificationReady=true;
+  updateNotifyUI();
+ }catch(e){
+  console.warn("Audio no disponible",e);
+ }
+}
+
+function playNewOrderSound(){
+ if(!notificationReady || !audioContext) return;
+ try{
+  const now=audioContext.currentTime;
+  [0,0.22,0.44].forEach((offset,i)=>{
+   const osc=audioContext.createOscillator();
+   const gain=audioContext.createGain();
+   osc.type="sine";
+   osc.frequency.value=[880,1046,1318][i];
+   gain.gain.setValueAtTime(0.0001,now+offset);
+   gain.gain.exponentialRampToValueAtTime(0.18,now+offset+0.03);
+   gain.gain.exponentialRampToValueAtTime(0.0001,now+offset+0.20);
+   osc.connect(gain);
+   gain.connect(audioContext.destination);
+   osc.start(now+offset);
+   osc.stop(now+offset+0.22);
+  });
+ }catch(e){console.warn("No se pudo reproducir aviso",e);}
+}
+
+async function enableBrowserNotifications(){
+ setupAudio();
+ if("Notification" in window && Notification.permission==="default"){
+  try{await Notification.requestPermission();}catch(e){}
+ }
+ updateNotifyUI();
+}
+
+function updateNotifyUI(){
+ const dot=$("notifyDot");
+ const status=$("notifyStatus");
+ const button=$("enableNotifications");
+ if(notificationReady){
+  dot.classList.add("on");
+  let extra="";
+  if("Notification" in window){
+   if(Notification.permission==="granted") extra=" y del navegador";
+   else if(Notification.permission==="denied") extra=" (navegador bloqueado)";
+  }
+  status.textContent="Avisos activos"+extra+".";
+  button.textContent="Avisos activos";
+ }else{
+  dot.classList.remove("on");
+  status.textContent="Activa los avisos para recibir una señal cuando llegue un pedido.";
+  button.textContent="Activar avisos";
+ }
+}
+
+function notifyNewOrder(order){
+ playNewOrderSound();
+ if("Notification" in window && Notification.permission==="granted"){
+  try{
+   new Notification("Nuevo pedido · Morros de Pichilemu",{
+    body:`${order.online_order_number!=null?`MP${String(order.online_order_number).padStart(4,"0")}`:"Pedido"} · ${order.customer_name||"Cliente"} · ${money(order.total||0)}`,
+    tag:`order-${order.id}`
+   });
+  }catch(e){}
+ }
+}
+
 async function renderOrders(){
  const {data,error}=await db.from("orders").select("*").order("created_at",{ascending:false}).limit(50);
  if(error){
@@ -374,6 +464,14 @@ async function renderOrders(){
    return;
  }
  ordersCache=data||[];
+ const currentIds=new Set(ordersCache.map(o=>String(o.id)));
+ if(!firstOrdersLoad){
+   const fresh=ordersCache.filter(o=>!lastKnownOrderIds.has(String(o.id)) && o.status==="recibido");
+   fresh.forEach(notifyNewOrder);
+ }
+ lastOrdersSnapshot=JSON.stringify(ordersCache.map(o=>[o.id,o.status,o.total]));
+ lastKnownOrderIds=currentIds;
+ firstOrdersLoad=false;
  const newOrders=ordersCache.filter(o=>o.status==="recibido");
  $("newOrdersCount").textContent=newOrders.length;
  $("newOrdersBadge").classList.toggle("hidden",newOrders.length===0);
@@ -414,6 +512,8 @@ window.changeOrderStatus=async(id,status)=>{
 };
 
 $("refreshOrders").onclick=renderOrders;
+$("enableNotifications").onclick=enableBrowserNotifications;
+updateNotifyUI();
 
 async function renderReservations(){
  const {data}=await db.from("reservations").select("*")
