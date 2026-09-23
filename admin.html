@@ -357,6 +357,7 @@ let lastOrdersSnapshot="";
 
 const ORDER_STATUS_LABELS={
  recibido:"Recibido",
+ aceptado:"Aceptado",
  preparacion:"En preparación",
  listo:"Listo",
  reparto:"En reparto",
@@ -384,6 +385,7 @@ let notificationReady=false;
 let audioContext=null;
 let lastKnownOrderIds=new Set();
 let firstOrdersLoad=true;
+const activeOrderAlerts=new Map();
 
 function setupAudio(){
  try{
@@ -396,23 +398,26 @@ function setupAudio(){
  }
 }
 
-function playNewOrderSound(){
+function playNewOrderSound(times=4){
  if(!notificationReady || !audioContext) return;
  try{
   const now=audioContext.currentTime;
-  [0,0.22,0.44].forEach((offset,i)=>{
-   const osc=audioContext.createOscillator();
-   const gain=audioContext.createGain();
-   osc.type="sine";
-   osc.frequency.value=[880,1046,1318][i];
-   gain.gain.setValueAtTime(0.0001,now+offset);
-   gain.gain.exponentialRampToValueAtTime(0.18,now+offset+0.03);
-   gain.gain.exponentialRampToValueAtTime(0.0001,now+offset+0.20);
-   osc.connect(gain);
-   gain.connect(audioContext.destination);
-   osc.start(now+offset);
-   osc.stop(now+offset+0.22);
-  });
+  for(let t=0;t<times;t++){
+   const base=t*0.75;
+   [0,0.20,0.40].forEach((offset,i)=>{
+    const osc=audioContext.createOscillator();
+    const gain=audioContext.createGain();
+    osc.type="sine";
+    osc.frequency.value=[980,1175,1396][i];
+    gain.gain.setValueAtTime(0.0001,now+base+offset);
+    gain.gain.exponentialRampToValueAtTime(0.34,now+base+offset+0.025);
+    gain.gain.exponentialRampToValueAtTime(0.0001,now+base+offset+0.24);
+    osc.connect(gain);
+    gain.connect(audioContext.destination);
+    osc.start(now+base+offset);
+    osc.stop(now+base+offset+0.25);
+   });
+  }
  }catch(e){console.warn("No se pudo reproducir aviso",e);}
 }
 
@@ -445,12 +450,34 @@ function updateNotifyUI(){
 }
 
 function notifyNewOrder(order){
- playNewOrderSound();
+ const key=String(order.id);
+ playNewOrderSound(4);
+
+ if(activeOrderAlerts.has(key)) clearInterval(activeOrderAlerts.get(key));
+ const reminder=setInterval(()=>{
+  const current=ordersCache.find(x=>String(x.id)===key);
+  if(!current || current.status!=="recibido"){
+   clearInterval(reminder);
+   activeOrderAlerts.delete(key);
+   return;
+  }
+  playNewOrderSound(4);
+  if("Notification" in window && Notification.permission==="granted"){
+   try{
+    new Notification("Pedido pendiente · Morros de Pichilemu",{
+     body:`${current.online_order_number!=null?`MP${String(current.online_order_number).padStart(4,"0")}`:"Pedido"} · ${current.customer_name||"Cliente"} · ${money(current.total||0)}`,
+     tag:`order-reminder-${key}`
+    });
+   }catch(e){}
+  }
+ },30000);
+ activeOrderAlerts.set(key,reminder);
+
  if("Notification" in window && Notification.permission==="granted"){
   try{
    new Notification("Nuevo pedido · Morros de Pichilemu",{
     body:`${order.online_order_number!=null?`MP${String(order.online_order_number).padStart(4,"0")}`:"Pedido"} · ${order.customer_name||"Cliente"} · ${money(order.total||0)}`,
-    tag:`order-${order.id}`
+    tag:`order-${key}`
    });
   }catch(e){}
  }
@@ -508,6 +535,11 @@ async function renderOrders(){
 window.changeOrderStatus=async(id,status)=>{
  const {error}=await db.from("orders").update({status}).eq("id",id);
  if(error){alert("No se pudo actualizar el estado: "+error.message);return}
+ const key=String(id);
+ if(activeOrderAlerts.has(key)){
+  clearInterval(activeOrderAlerts.get(key));
+  activeOrderAlerts.delete(key);
+ }
  await renderOrders();
 };
 
