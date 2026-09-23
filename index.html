@@ -579,20 +579,26 @@ async function loadSettings(){
     document.getElementById("reviews").href=settings.google_reviews||"https://g.page/r/CUeAqcZ6oxg0EBE/review";
     if(settings.logo){document.getElementById("logo").src=settings.logo;document.getElementById("heroLogo").src=settings.logo}
     const hero=document.querySelector(".hero");
-    if(settings.hero_image){
-      const heroUrl=settings.hero_image+(settings.hero_image.includes("?")?"&":"?")+"v="+Date.now();
-      const heroCss=`url("${heroUrl.replace(/"/g,'\\"')}")`;
-      document.documentElement.style.setProperty("--hero-image",heroCss);
-      if(hero) hero.style.backgroundImage=`linear-gradient(90deg,rgba(4,35,42,.72),rgba(4,35,42,.42)),${heroCss}`;
-    }else{
-      document.documentElement.style.setProperty("--hero-image","linear-gradient(135deg,#164d55,#082f38)");
-      if(hero) hero.style.backgroundImage="linear-gradient(135deg,#164d55,#082f38)";
+    const bust=Date.now();
+    const heroUrl=settings.hero_image?settings.hero_image+(settings.hero_image.includes("?")?"&":"?")+"v="+bust:"";
+    if(hero && heroUrl){
+      hero.style.backgroundImage="linear-gradient(90deg,rgba(4,35,42,.62),rgba(4,35,42,.28)),url('"+heroUrl.replace(/'/g,"%27")+"')";
+      hero.style.backgroundSize="cover";
+      hero.style.backgroundPosition="center";
+      hero.style.backgroundRepeat="no-repeat";
+    }else if(hero){
+      hero.style.backgroundImage="linear-gradient(135deg,#164d55,#082f38)";
     }
+    document.documentElement.style.setProperty("--hero-image","none");
+
     if(settings.watermark_image){
-      const watermarkUrl=settings.watermark_image+(settings.watermark_image.includes("?")?"&":"?")+"v="+Date.now();
-      const watermarkCss=`url("${watermarkUrl.replace(/"/g,'\\"')}")`;
+      const watermarkUrl=settings.watermark_image+(settings.watermark_image.includes("?")?"&":"?")+"v="+bust;
+      const watermarkCss="url('"+watermarkUrl.replace(/'/g,"%27")+"')";
       document.documentElement.style.setProperty("--watermark-image",watermarkCss);
       document.body.style.setProperty("--watermark-image",watermarkCss);
+    }else{
+      document.documentElement.style.setProperty("--watermark-image","none");
+      document.body.style.setProperty("--watermark-image","none");
     }else if(settings.logo){
       const logoCss=`url("${settings.logo.replace(/"/g,'\\"')}")`;
       document.documentElement.style.setProperty("--watermark-image",logoCss);
