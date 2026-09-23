@@ -701,7 +701,7 @@ async function renderReservations(){
   else if(phone.startsWith("9")) phone="56"+phone;
   if(!phone.startsWith("56")) return "#";
   const status=String(r.status||"Pendiente");
-  const message=`MORROS DE PICHILEMU — RESERVA\n\nReserva: *#${r.id||""}*\nCliente: *${r.name||""}*\nPersonas: *${r.people||""}*\nFecha: *${fmtDate(r.reservation_date)}*\nHora: *${String(r.reservation_time||"").slice(0,5)}*\nEstado: *${status}*${r.reason?`\nMotivo: ${r.reason}`:""}${r.observations?`\nObservaciones: ${r.observations}`:""}\n\nPor favor confirmar recepción de esta reserva.`;
+  const message=`*MORROS DE PICHILEMU — CONFIRMACIÓN DE RESERVA*\n\nHola *${r.name||""}*, queremos confirmar los datos de tu reserva:\n\n*Fecha: ${fmtDate(r.reservation_date)}*\n*Hora: ${String(r.reservation_time||"").slice(0,5)} hrs*\n*Personas: ${r.people||""}*${r.reason?`\nMotivo: *${r.reason}*`:""}${r.observations?`\nObservaciones: ${r.observations}`:""}\n\n¡Te esperamos en *Morros de Pichilemu*!\nPor favor responde este mensaje para confirmar tu reserva.`;
   return `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
  };
  $("reservations").innerHTML=rows.map(r=>{
@@ -727,7 +727,7 @@ async function renderReservations(){
        <option ${status==="Confirmada"?"selected":""}>Confirmada</option>
        <option ${status==="Rechazada"?"selected":""}>Rechazada</option>
       </select>
-      ${wa(r)!=="#"?`<a class="btn reservation-wa" href="${wa(r)}" target="_blank" rel="noopener">Confirmar por WhatsApp</a>`:"<span class="reservation-no-wa">Teléfono no válido para WhatsApp</span>"}
+      ${wa(r)!=="#"?'<a class="btn reservation-wa" href="'+wa(r)+'" target="_blank" rel="noopener">Confirmar por WhatsApp</a>':'<span class="reservation-no-wa">Teléfono no válido para WhatsApp</span>'}
     </div>
    </article>`;
  }).join("");
