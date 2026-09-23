@@ -596,9 +596,6 @@ async function loadSettings(){
       const watermarkCss="url('"+watermarkUrl.replace(/'/g,"%27")+"')";
       document.documentElement.style.setProperty("--watermark-image",watermarkCss);
       document.body.style.setProperty("--watermark-image",watermarkCss);
-    }else{
-      document.documentElement.style.setProperty("--watermark-image","none");
-      document.body.style.setProperty("--watermark-image","none");
     }else if(settings.logo){
       const logoCss=`url("${settings.logo.replace(/"/g,'\\"')}")`;
       document.documentElement.style.setProperty("--watermark-image",logoCss);
