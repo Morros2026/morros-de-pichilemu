@@ -59,6 +59,41 @@ small{color:#667}.hidden{display:none}
  .day-row strong{grid-column:1/-1}
  .day-row label:last-child{grid-column:1/-1}
 }
+
+.admin-tabs{position:sticky;top:0;z-index:20;display:flex;gap:8px;flex-wrap:wrap;background:rgba(245,250,250,.96);backdrop-filter:blur(8px);padding:10px 0 12px;margin:-4px 0 12px;border-bottom:1px solid var(--line)}
+.admin-tab{border:1px solid var(--line);background:#fff;color:var(--d);border-radius:12px;padding:11px 18px;font:inherit;font-weight:800;cursor:pointer;transition:.15s}
+.admin-tab:hover{transform:translateY(-1px)}
+.admin-tab.active{background:var(--t);border-color:var(--t);color:#fff}
+.admin-section{display:none}
+.admin-section.active{display:block}
+.section-heading{display:flex;justify-content:space-between;gap:10px;align-items:center;margin-bottom:12px}
+.reservation-card{border:1px solid var(--line);border-radius:15px;padding:15px;margin:10px 0;background:#fff;box-shadow:0 2px 8px rgba(8,63,67,.04)}
+.reservation-card.today{border-left:5px solid var(--t);background:#fbffff}
+.reservation-top{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}
+.reservation-date{text-transform:capitalize;font-weight:800;color:var(--d);font-size:1rem}
+.reservation-time{font-size:1.35rem;font-weight:900;color:var(--d);margin-top:3px}
+.today-pill{font-size:.68rem;background:var(--t);color:#fff;border-radius:999px;padding:4px 7px;margin-left:5px;vertical-align:middle}
+.reservation-status{font-size:.78rem;font-weight:800;padding:6px 9px;border-radius:999px;border:1px solid var(--line);white-space:nowrap}
+.status-pendiente{background:#fff8e7;border-color:#eadfb6;color:#7b6210}
+.status-confirmada{background:#f1fff5;border-color:#c9e7d1;color:#21713a}
+.status-rechazada{background:#fff3f3;border-color:#f0caca;color:#a33}
+.reservation-main{margin-top:12px;padding-top:12px;border-top:1px solid var(--line);line-height:1.55}
+.reservation-client{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;font-size:1.05rem}
+.reservation-client span,.reservation-contact{color:#536a6d}
+.reservation-note{margin-top:6px;color:#536a6d}
+.reservation-actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:13px}
+.reservation-status-select{padding:10px;border:1px solid var(--line);border-radius:9px;font:inherit;font-weight:700;background:#fff}
+.reservation-wa{background:var(--t);text-decoration:none;display:inline-block}
+.reservation-no-wa{font-size:.86rem;color:#a33}
+.reservation-empty{padding:28px;text-align:center;color:#667;border:1px dashed var(--line);border-radius:12px}
+@media(max-width:700px){
+ .admin-tabs{overflow-x:auto;flex-wrap:nowrap}
+ .admin-tab{flex:0 0 auto}
+ .reservation-top{display:block}
+ .reservation-status{display:inline-block;margin-top:8px}
+ .reservation-actions>*{width:100%}
+ .reservation-wa{text-align:center}
+}
 </style>
 </head>
 <body>
@@ -95,7 +130,14 @@ small{color:#667}.hidden{display:none}
 
 <section id="panel" class="hidden">
 
-<div class="card">
+<div class="admin-tabs" role="tablist" aria-label="Secciones del administrador">
+ <button class="admin-tab active" data-tab="info" type="button">Información</button>
+ <button class="admin-tab" data-tab="menu" type="button">Platos</button>
+ <button class="admin-tab" data-tab="orders" type="button">Pedidos</button>
+ <button class="admin-tab" data-tab="reservations" type="button">Reservas</button>
+</div>
+
+<div class="card admin-section" data-section="info">
  <div class="row"><h2>Configuración del restaurante</h2><button class="btn" id="saveSettings">Guardar</button></div>
  <div class="grid">
   <label>Dirección<input id="s_address"></label>
@@ -120,19 +162,19 @@ small{color:#667}.hidden{display:none}
  </div>
 </div>
 
-<div class="card">
+<div class="card admin-section" data-section="menu">
  <div class="row"><h2>Categorías</h2><button class="btn" id="addCat">Nueva categoría</button></div>
  <div id="cats"></div>
 </div>
 
-<div class="card">
+<div class="card admin-section" data-section="menu">
  <h2>Platos</h2>
  <p><small>Puede editar nombre, precio, foto, visibilidad y agotado.</small></p>
  <div id="items"></div>
 </div>
 
 
-<div class="card">
+<div class="card admin-section" data-section="orders">
  <div class="orders-toolbar">
   <div>
    <h2 style="margin:0">Pedidos online</h2>
@@ -172,8 +214,8 @@ small{color:#667}.hidden{display:none}
 
 </div>
 
-<div class="card">
- <h2>Reservas</h2>
+<div class="card admin-section" data-section="reservations">
+ <div class="section-heading"><div><h2 style="margin:0">Reservas</h2><small>Gestiona tus reservas y confirma al cliente directamente por WhatsApp.</small></div></div>
  <div id="reservations"></div>
 </div>
 
@@ -642,21 +684,68 @@ async function renderReservations(){
  const {data}=await db.from("reservations").select("*")
   .order("reservation_date",{ascending:true})
   .order("reservation_time",{ascending:true});
- $("reservations").innerHTML=(data||[]).map(r=>`<div class="item">
-  <b>${r.name}</b> · ${r.people} personas<br>
-  ${r.reservation_date} ${String(r.reservation_time).slice(0,5)} · ${r.phone}<br>
-  <small>${r.reason||""} ${r.observations||""}</small><br>
-  <select onchange="statusRes('${r.id}',this.value)">
-   <option ${r.status==="Pendiente"?"selected":""}>Pendiente</option>
-   <option ${r.status==="Confirmada"?"selected":""}>Confirmada</option>
-   <option ${r.status==="Rechazada"?"selected":""}>Rechazada</option>
-  </select>
- </div>`).join("");
+ const rows=data||[];
+ if(!rows.length){
+  $("reservations").innerHTML='<div class="reservation-empty">No hay reservas registradas.</div>';
+  return;
+ }
+ const today=new Date(); today.setHours(0,0,0,0);
+ const fmtDate=(v)=>{
+  if(!v) return "";
+  const d=new Date(v+"T00:00:00");
+  return Number.isNaN(d.getTime())?v:d.toLocaleDateString("es-CL",{weekday:"long",day:"2-digit",month:"long"});
+ };
+ const wa=(r)=>{
+  let phone=String(r.phone||"").replace(/\\D/g,"");
+  if(phone.startsWith("0")) phone="56"+phone.slice(1);
+  else if(phone.startsWith("9")) phone="56"+phone;
+  if(!phone.startsWith("56")) return "#";
+  const status=String(r.status||"Pendiente");
+  const message=`MORROS DE PICHILEMU — RESERVA\n\nReserva: *#${r.id||""}*\nCliente: *${r.name||""}*\nPersonas: *${r.people||""}*\nFecha: *${fmtDate(r.reservation_date)}*\nHora: *${String(r.reservation_time||"").slice(0,5)}*\nEstado: *${status}*${r.reason?`\nMotivo: ${r.reason}`:""}${r.observations?`\nObservaciones: ${r.observations}`:""}\n\nPor favor confirmar recepción de esta reserva.`;
+  return `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
+ };
+ $("reservations").innerHTML=rows.map(r=>{
+   const status=String(r.status||"Pendiente");
+   const isToday=r.reservation_date===today.toISOString().slice(0,10);
+   return `<article class="reservation-card ${isToday?"today":""}">
+    <div class="reservation-top">
+      <div>
+       <div class="reservation-date">${fmtDate(r.reservation_date)}${isToday?' <span class="today-pill">HOY</span>':''}</div>
+       <div class="reservation-time">${String(r.reservation_time||"").slice(0,5)} hrs</div>
+      </div>
+      <span class="reservation-status status-${status.toLowerCase()}">${status}</span>
+    </div>
+    <div class="reservation-main">
+      <div class="reservation-client"><strong>${r.name||"Sin nombre"}</strong><span>${r.people||0} ${Number(r.people)===1?'persona':'personas'}</span></div>
+      <div class="reservation-contact">${r.phone||"Sin teléfono"}</div>
+      ${r.reason?`<div class="reservation-note"><b>Motivo:</b> ${r.reason}</div>`:""}
+      ${r.observations?`<div class="reservation-note"><b>Observaciones:</b> ${r.observations}</div>`:""}
+    </div>
+    <div class="reservation-actions">
+      <select class="reservation-status-select" onchange="statusRes('${r.id}',this.value)">
+       <option ${status==="Pendiente"?"selected":""}>Pendiente</option>
+       <option ${status==="Confirmada"?"selected":""}>Confirmada</option>
+       <option ${status==="Rechazada"?"selected":""}>Rechazada</option>
+      </select>
+      ${wa(r)!=="#"?`<a class="btn reservation-wa" href="${wa(r)}" target="_blank" rel="noopener">Confirmar por WhatsApp</a>`:"<span class="reservation-no-wa">Teléfono no válido para WhatsApp</span>"}
+    </div>
+   </article>`;
+ }).join("");
 }
-
 window.statusRes=async(id,status)=>{
  await db.from("reservations").update({status}).eq("id",id);
 };
+
+
+function activateAdminTab(tab){
+ document.querySelectorAll(".admin-tab").forEach(b=>b.classList.toggle("active",b.dataset.tab===tab));
+ document.querySelectorAll(".admin-section").forEach(s=>s.classList.toggle("active",s.dataset.section===tab));
+ if(tab==="orders") renderOrders();
+ if(tab==="reservations") renderReservations();
+ window.scrollTo({top:0,behavior:"smooth"});
+}
+document.querySelectorAll(".admin-tab").forEach(btn=>btn.addEventListener("click",()=>activateAdminTab(btn.dataset.tab)));
+activateAdminTab("info");
 
 db.auth.onAuthStateChange((event,session)=>{
  if(event==="PASSWORD_RECOVERY"){
