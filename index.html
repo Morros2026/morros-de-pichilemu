@@ -557,7 +557,12 @@ async function loadSettings(){
     document.getElementById("pedidos").href=settings.pedidos_ya||"#";
     document.getElementById("uber").href=settings.uber_eats||"#";
     document.getElementById("reviews").href=settings.google_reviews||"https://g.page/r/CUeAqcZ6oxg0EBE/review";
-    if(settings.logo){document.getElementById("logo").src=settings.logo;document.getElementById("heroLogo").src=settings.logo}
+    if(settings.logo){
+  const logo=document.getElementById("logo");
+  if(logo)logo.src=settings.logo;
+  const heroLogo=document.getElementById("heroLogo");
+  if(heroLogo)heroLogo.src=settings.logo;
+}
 
     /*
       Las imágenes de portada y marca de agua se cargan desde Supabase.
