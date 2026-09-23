@@ -138,6 +138,18 @@ small{color:#667}.hidden{display:none}
 
   </div>
  </div>
+ <div class="orders-filters" style="display:flex;gap:8px;flex-wrap:wrap;margin:12px 0">
+   <button class="btn order-filter active" data-order-filter="pendientes" type="button">Pendientes</button>
+   <button class="btn alt order-filter" data-order-filter="proceso" type="button">En proceso</button>
+   <button class="btn alt order-filter" data-order-filter="historial" type="button">Historial</button>
+   <button class="btn alt order-filter" data-order-filter="todos" type="button">Todos</button>
+  </div>
+  <div class="orders-search" style="margin-bottom:12px">
+   <input id="orderSearch" type="search" placeholder="Buscar por pedido, cliente o teléfono..." style="width:100%;max-width:520px;padding:11px 12px;border:1px solid #d9e8e8;border-radius:10px;font-size:15px">
+  </div>
+
+  </div>
+ </div>
  
  <div class="notify-settings">
   <span id="notifyDot" class="notify-dot"></span>
@@ -354,6 +366,8 @@ window.hideItem=async id=>{
 
 let ordersCache=[];
 let lastOrdersSnapshot="";
+let orderFilter="pendientes";
+let orderSearchTerm="";
 
 const ORDER_STATUS_LABELS={
  recibido:"Recibido",
@@ -503,7 +517,20 @@ async function renderOrders(){
  $("newOrdersCount").textContent=newOrders.length;
  $("newOrdersBadge").classList.toggle("hidden",newOrders.length===0);
 
- $("orders").innerHTML=ordersCache.length?ordersCache.map(o=>{
+ const visibleOrders=ordersCache.filter(o=>{
+   const status=String(o.status||"");
+   const inFilter=orderFilter==="pendientes" ? status==="recibido"
+     : orderFilter==="proceso" ? ["aceptado","preparacion","listo","reparto"].includes(status)
+     : orderFilter==="historial" ? ["entregado","cancelado"].includes(status)
+     : true;
+   if(!inFilter) return false;
+   if(!orderSearchTerm) return true;
+   const number=o.online_order_number!=null?`MP${String(o.online_order_number).padStart(4,"0")}`:"";
+   const hay=[number,o.customer_name,o.phone,o.address].join(" ").toLowerCase();
+   return hay.includes(orderSearchTerm);
+ });
+
+ $("orders").innerHTML=visibleOrders.length?visibleOrders.map(o=>{
    const number=`MP${String(o.online_order_number).padStart(4,"0")}`;
    const type=o.fulfillment_type==="delivery"?"Delivery":"Retiro en restaurante";
    const payment={debito:"Débito",credito:"Crédito",efectivo:"Efectivo",transferencia:"Transferencia"}[o.payment_method]||o.payment_method||"";
@@ -530,8 +557,24 @@ async function renderOrders(){
        ${orderItemsHtml(o.items)}
      </div>
    </div>`;
- }).join(""):'<div class="order-empty">Todavía no hay pedidos online.</div>';
+ }).join(""):`<div class="order-empty">No hay pedidos en esta vista.</div>`;
 }
+
+document.querySelectorAll(".order-filter").forEach(btn=>{
+ btn.addEventListener("click",()=>{
+   orderFilter=btn.dataset.orderFilter;
+   document.querySelectorAll(".order-filter").forEach(b=>{
+     b.classList.toggle("active",b===btn);
+     b.classList.toggle("alt",b!==btn);
+   });
+   renderOrders();
+ });
+});
+
+$("orderSearch").addEventListener("input",e=>{
+ orderSearchTerm=String(e.target.value||"").trim().toLowerCase();
+ renderOrders();
+});
 
 window.sendWhatsAppConfirmation=(id)=>{
  const o=ordersCache.find(x=>String(x.id)===String(id));
