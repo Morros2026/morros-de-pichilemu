@@ -30,6 +30,13 @@ small{color:#667}.hidden{display:none}
 .notify-dot.on{background:#0d9f9f}
 .notify-note{font-size:.86rem;color:#667}
 .orders-badge{display:inline-flex;align-items:center;gap:7px;background:#fff3f3;color:#a33;border:1px solid #f0caca;border-radius:999px;padding:7px 11px;font-weight:700}
+.order-summary{display:flex;gap:8px;flex-wrap:wrap;margin:4px 0 12px}
+.order-count{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);border-radius:999px;padding:7px 11px;background:#fff;font-size:.9rem;color:#486064}
+.order-count b{font-size:1rem;color:var(--d)}
+.order-count.received{border-color:#f0caca;background:#fff8f8}
+.order-count.preparing{border-color:#eadfb6;background:#fffdf3}
+.order-count.ready{border-color:#c9e7d1;background:#f7fff9}
+.order-count.delivery{border-color:#cfe2ed;background:#f7fbff}
 .order-card{border:1px solid var(--line);border-radius:14px;padding:14px;margin:10px 0;background:#fff}
 .order-card.new{border-left:5px solid var(--t)}
 .order-top{display:flex;justify-content:space-between;gap:12px;align-items:flex-start;flex-wrap:wrap}
@@ -143,6 +150,12 @@ small{color:#667}.hidden{display:none}
    <button class="btn alt order-filter" data-order-filter="proceso" type="button">En proceso</button>
    <button class="btn alt order-filter" data-order-filter="historial" type="button">Historial</button>
    <button class="btn alt order-filter" data-order-filter="todos" type="button">Todos</button>
+  </div>
+  <div id="orderSummary" class="order-summary" aria-live="polite">
+   <span class="order-count received"><b id="countReceived">0</b> Recibidos</span>
+   <span class="order-count preparing"><b id="countPreparing">0</b> En preparación</span>
+   <span class="order-count ready"><b id="countReady">0</b> Listos</span>
+   <span class="order-count delivery"><b id="countDelivery">0</b> En reparto</span>
   </div>
   <div class="orders-search" style="margin-bottom:12px">
    <input id="orderSearch" type="search" placeholder="Buscar por pedido, cliente o teléfono..." style="width:100%;max-width:520px;padding:11px 12px;border:1px solid #d9e8e8;border-radius:10px;font-size:15px">
@@ -517,6 +530,12 @@ async function renderOrders(){
  $("newOrdersCount").textContent=newOrders.length;
  $("newOrdersBadge").classList.toggle("hidden",newOrders.length===0);
 
+ // Resumen rápido para saber qué está pendiente en todo momento.
+ $("countReceived").textContent=ordersCache.filter(o=>o.status==="recibido").length;
+ $("countPreparing").textContent=ordersCache.filter(o=>o.status==="preparacion").length;
+ $("countReady").textContent=ordersCache.filter(o=>o.status==="listo").length;
+ $("countDelivery").textContent=ordersCache.filter(o=>o.status==="reparto").length;
+
  const visibleOrders=ordersCache.filter(o=>{
    const status=String(o.status||"");
    const inFilter=orderFilter==="pendientes" ? status==="recibido"
@@ -528,6 +547,15 @@ async function renderOrders(){
    const number=o.online_order_number!=null?`MP${String(o.online_order_number).padStart(4,"0")}`:"";
    const hay=[number,o.customer_name,o.phone,o.address].join(" ").toLowerCase();
    return hay.includes(orderSearchTerm);
+ });
+
+ // Los pedidos más urgentes siempre quedan arriba.
+ const orderPriority={recibido:0,aceptado:1,preparacion:2,listo:3,reparto:4,entregado:5,cancelado:6};
+ visibleOrders.sort((a,b)=>{
+   const pa=orderPriority[a.status] ?? 99;
+   const pb=orderPriority[b.status] ?? 99;
+   if(pa!==pb) return pa-pb;
+   return new Date(b.created_at).getTime()-new Date(a.created_at).getTime();
  });
 
  $("orders").innerHTML=visibleOrders.length?visibleOrders.map(o=>{
