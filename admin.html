@@ -522,6 +522,7 @@ async function renderOrders(){
        </div>
      </div>
      <div class="order-detail">
+       ${o.status==="aceptado"?`<button class="btn" type="button" onclick="sendWhatsAppConfirmation('${o.id}')">Confirmar por WhatsApp</button><br><br>`:""}
        <b>Forma de pago:</b> ${payment}<br>
        ${o.fulfillment_type==="delivery"?`<b>Dirección:</b> ${o.address||"No indicada"}${o.reference?`<br><b>Referencia:</b> ${o.reference}`:""}`:`<b>Hora de retiro:</b> ${o.pickup_time||"No indicada"}`}
        ${o.notes?`<br><b>Observaciones:</b> ${o.notes}`:""}
@@ -531,6 +532,25 @@ async function renderOrders(){
    </div>`;
  }).join(""):'<div class="order-empty">Todavía no hay pedidos online.</div>';
 }
+
+window.sendWhatsAppConfirmation=(id)=>{
+ const o=ordersCache.find(x=>String(x.id)===String(id));
+ if(!o){alert("No se encontró el pedido.");return}
+ if(!o.phone){alert("Este pedido no tiene teléfono registrado.");return}
+ const number=`MP${String(o.online_order_number).padStart(4,"0")}`;
+ const total=money(o.total||0);
+ const type=o.fulfillment_type==="delivery"?"Delivery":"Retiro en restaurante";
+ const items=Array.isArray(o.items)?o.items.map(x=>{
+   const addon=x.addon?`\n   - Agregado: ${x.addon}${Number(x.addon_price)?` — ${money(Number(x.addon_price))}`:""}`:"";
+   return `• ${Number(x.qty)||0} × ${x.name||"Producto"} — ${money(Number(x.line_total)||0)}${addon}`;
+ }).join("\n"):"";
+ const message=`MORROS DE PICHILEMU — CONFIRMACIÓN DE PEDIDO\n\nPedido: #${number}\nHola ${o.customer_name||""}, tu pedido ha sido aceptado y comenzaremos a prepararlo.\n\n${items}\n\nTOTAL: ${total}\nModalidad: ${type}${o.fulfillment_type==="delivery"&&o.address?`\nDirección: ${o.address}`:""}${o.fulfillment_type==="retiro"&&o.pickup_time?`\nHora de retiro: ${o.pickup_time}`:""}\n\nGracias por preferir Morros de Pichilemu.`;
+ let phone=String(o.phone).replace(/\D/g,"");
+ if(phone.startsWith("0")) phone="56"+phone.slice(1);
+ else if(phone.startsWith("9")) phone="56"+phone;
+ if(!phone.startsWith("56")){alert("No pude reconocer el número de WhatsApp: "+o.phone);return}
+ window.open(`https://wa.me/${phone}?text=${encodeURIComponent(message)}`,"_blank");
+};
 
 window.changeOrderStatus=async(id,status)=>{
  const {error}=await db.from("orders").update({status}).eq("id",id);
