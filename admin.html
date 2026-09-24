@@ -18,6 +18,52 @@ main{max-width:1100px;margin:auto;padding:22px}
 .btn.red{background:#a33}.btn.alt{background:#e8f5f5;color:var(--d)}
 .row{display:flex;gap:8px;align-items:center;justify-content:space-between;flex-wrap:wrap}
 .item{padding:12px;border-top:1px solid var(--line)}
+.menu-item-row{
+ display:grid;
+ grid-template-columns:minmax(280px,1fr) auto;
+ gap:18px;
+ align-items:center;
+ width:100%;
+}
+.menu-item-info{
+ min-width:0;
+}
+.menu-item-info b{
+ display:block;
+ overflow-wrap:anywhere;
+}
+.menu-item-actions{
+ display:flex;
+ align-items:center;
+ justify-content:flex-end;
+ gap:6px;
+ flex-wrap:nowrap;
+ white-space:nowrap;
+}
+@media(max-width:900px){
+ .menu-item-row{
+  grid-template-columns:minmax(220px,1fr) auto;
+  gap:12px;
+ }
+ .menu-item-actions{
+  overflow-x:auto;
+  max-width:100%;
+  justify-content:flex-start;
+  padding-bottom:2px;
+ }
+}
+@media(max-width:700px){
+ .menu-item-row{
+  grid-template-columns:1fr;
+  gap:10px;
+ }
+ .menu-item-actions{
+  width:100%;
+  overflow-x:auto;
+  justify-content:flex-start;
+ }
+}
+
 small{color:#667}.hidden{display:none}
 .hours-table{display:grid;gap:8px;margin-top:12px}
 .day-row{display:grid;grid-template-columns:150px 1fr 1fr 100px;gap:8px;align-items:center;padding:8px;border:1px solid var(--line);border-radius:10px}
@@ -433,15 +479,17 @@ $("addCat").onclick=async()=>{
 function renderItems(){
  $("items").innerHTML=cats.map(c=>`<h3>${c.name}</h3>${
   items.filter(i=>i.category_id===c.id).map(i=>`<div class="item">
-   <div class="row"><div><b>${i.name}</b><br><small>${money(i.price)} · ${i.active?"Visible":"Oculto"} · ${i.sold_out?"AGOTADO":"Disponible"} · ${i.image_url?"📷 Con foto":"⚠️ Sin foto"}</small></div>
-   <span>
+   <div class="menu-item-row">
+   <div class="menu-item-info"><b>${i.name}</b><br><small>${money(i.price)} · ${i.active?"Visible":"Oculto"} · ${i.sold_out?"AGOTADO":"Disponible"} · ${i.image_url?"📷 Con foto":"⚠️ Sin foto"}</small></div>
+   <div class="menu-item-actions">
     <button class="btn alt" onclick="editItem('${i.id}')">Editar</button>
     <button class="btn" onclick="chooseMenuPhoto('${i.id}')">📷 ${i.image_url?"Cambiar foto":"Subir foto"}</button>
     ${i.image_url?`<button class="btn red" onclick="deleteMenuPhoto('${i.id}')">🗑️ Eliminar foto</button>`:""}
     <button class="btn alt" onclick="toggleSold('${i.id}')">${i.sold_out?"Quitar agotado":"Marcar agotado"}</button>
     <button class="btn red" onclick="hideItem('${i.id}')">${i.active?"Ocultar":"Mostrar"}</button>
     <button class="btn red" onclick="deleteItem('${i.id}')">Eliminar plato</button>
-   </span></div>
+   </div>
+  </div>
   </div>`).join("")
  }`).join("");
 }
