@@ -141,6 +141,18 @@ small{color:#667}.hidden{display:none}
  .reservation-wa{text-align:center}
 }
 .image-preview{display:block;width:100%;max-width:420px;height:150px;object-fit:cover;border:1px solid #dfe8e5;border-radius:14px;margin-top:10px;background:#f3f7f6}.watermark-preview{object-fit:contain;background:#fff}.image-preview[hidden]{display:none}#heroUploadMsg,#watermarkUploadMsg{display:block;margin-top:7px;color:#667779}
+
+.stats-cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:14px 0}
+.stats-card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:14px;min-height:94px}
+.stats-card .stats-icon{font-size:1.25rem}.stats-card .stats-label{font-size:.82rem;color:#667;margin-top:5px}.stats-card .stats-value{font-size:1.55rem;font-weight:900;color:var(--d);margin-top:3px}
+.stats-panel{border:1px solid var(--line);border-radius:14px;padding:14px;margin-top:12px;background:#fbfefe}
+.stats-panel-head h3{margin:0 0 3px;color:var(--d)}
+.stats-chart{display:grid;grid-template-columns:repeat(14,minmax(22px,1fr));gap:7px;align-items:end;height:190px;margin-top:18px;padding:0 4px 4px;border-bottom:1px solid var(--line)}
+.stats-day{height:100%;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:5px;min-width:0}.stats-bars{height:145px;width:100%;display:flex;align-items:flex-end;justify-content:center;gap:3px}.stats-bar{width:38%;min-height:2px;border-radius:6px 6px 2px 2px;background:var(--t)}.stats-bar.menu{background:#8aaeb0}.stats-day-label{font-size:.68rem;color:#667;white-space:nowrap;transform:rotate(-35deg);transform-origin:center top;margin-top:7px}.stats-day-total{font-size:.66rem;color:#536a6d}
+.stats-legend{grid-column:1/-1;display:flex;gap:14px;flex-wrap:wrap;margin-top:10px;font-size:.78rem;color:#536a6d}.stats-dot{display:inline-block;width:9px;height:9px;border-radius:3px;background:var(--t);margin-right:5px}.stats-dot.menu{background:#8aaeb0}
+.stats-table-wrap{overflow:auto;margin-top:10px}.stats-table{width:100%;border-collapse:collapse;min-width:720px;font-size:.82rem}.stats-table th,.stats-table td{padding:10px 8px;border-bottom:1px solid var(--line);text-align:right;white-space:nowrap}.stats-table th:first-child,.stats-table td:first-child{text-align:left}.stats-table th{color:var(--d);font-size:.76rem;text-transform:uppercase;letter-spacing:.03em}.stats-msg{color:#667;font-size:.82rem;margin:10px 0 0}
+@media(max-width:800px){.stats-cards{grid-template-columns:repeat(2,minmax(0,1fr))}.stats-chart{gap:4px}}
+@media(max-width:520px){.stats-cards{grid-template-columns:1fr 1fr}.stats-card{padding:11px}.stats-card .stats-value{font-size:1.3rem}.stats-chart{height:175px}.stats-day-label{font-size:.6rem}}
 </style>
 </head>
 <body>
@@ -182,6 +194,7 @@ small{color:#667}.hidden{display:none}
  <button class="admin-tab" data-tab="menu" type="button">Platos</button>
  <button class="admin-tab" data-tab="orders" type="button">Pedidos</button>
  <button class="admin-tab" data-tab="reservations" type="button">Reservas</button>
+ <button class="admin-tab" data-tab="stats" type="button">📊 Estadísticas</button>
 </div>
 
 <div class="card admin-section" data-section="info">
@@ -283,6 +296,23 @@ small{color:#667}.hidden{display:none}
  <div id="reservations"></div>
 </div>
 
+<div class="card admin-section" data-section="stats">
+ <div class="section-heading">
+  <div><h2 style="margin:0">📊 Estadísticas de la página</h2><small>Actividad registrada desde la página web de Morros de Pichilemu.</small></div>
+  <button class="btn alt" id="refreshStats" type="button">Actualizar</button>
+ </div>
+ <div id="statsCards" class="stats-cards"></div>
+ <div class="stats-panel">
+  <div class="stats-panel-head"><div><h3>Actividad de los últimos 14 días</h3><small>Visitas y vistas del menú por día.</small></div></div>
+  <div id="statsChart" class="stats-chart"></div>
+ </div>
+ <div class="stats-panel">
+  <div class="stats-panel-head"><div><h3>Detalle diario</h3><small>Conteo de cada acción registrada.</small></div></div>
+  <div class="stats-table-wrap"><table class="stats-table"><thead><tr><th>Fecha</th><th>Visitas</th><th>Menú</th><th>Pedidos</th><th>Reservas</th><th>WhatsApp</th><th>Ubicación</th></tr></thead><tbody id="statsTableBody"></tbody></table></div>
+ </div>
+ <p id="statsMsg" class="stats-msg"></p>
+</div>
+
 </section>
 </main>
 
@@ -291,6 +321,9 @@ const SUPABASE_URL="https://dodvvywybklwinrulvov.supabase.co";
 const KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRvZHZ2eXd5Ymtsd2lucnVsdm92Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODgzMTg5NDUsImV4cCI6MjEwMzg5NDk0NX0.QrwITo8GghhunCagvxqCPfOq-bzPm9F72J1FiwmrQpk";
 const db=supabase.createClient(SUPABASE_URL,KEY);
 const ADMIN="restaurantemorrosdepichilemu@gmail.com";
+
+const STAT_EVENT_LABELS={page_view:"Visitas",menu_view:"Vistas del menú",order:"Pedidos",reservation:"Reservas",whatsapp_click:"Clics en WhatsApp",location_click:"Clics en ubicación"};
+const STAT_EVENT_ICONS={page_view:"👁️",menu_view:"🍽️",order:"🛒",reservation:"📅",whatsapp_click:"💬",location_click:"📍"};
 const REDIRECT=location.origin+location.pathname;
 let cats=[],items=[];
 const $=id=>document.getElementById(id);
@@ -378,6 +411,30 @@ async function showPanel(){
  await loadAll();
 }
 $("logout").onclick=()=>db.auth.signOut().then(()=>location.reload());
+
+function formatStatDate(date){return date.toLocaleDateString("es-CL",{day:"2-digit",month:"2-digit"});}
+function dateKeyLocal(d){const x=new Date(d);return `${x.getFullYear()}-${String(x.getMonth()+1).padStart(2,"0")}-${String(x.getDate()).padStart(2,"0")}`;}
+
+async function renderStats(){
+ const msg=$("statsMsg");
+ if(!$("statsCards")||!$("statsTableBody"))return;
+ msg.textContent="Cargando estadísticas…";
+ const since=new Date(); since.setDate(since.getDate()-30);
+ const {data,error}=await db.from("site_analytics").select("event_type,created_at").gte("created_at",since.toISOString()).order("created_at",{ascending:true}).limit(10000);
+ if(error){msg.textContent="No se pudieron cargar las estadísticas: "+error.message;return;}
+ const rows=data||[];
+ const totals={page_view:0,menu_view:0,order:0,reservation:0,whatsapp_click:0,location_click:0};
+ rows.forEach(r=>{if(totals[r.event_type]!==undefined)totals[r.event_type]++;});
+ $("statsCards").innerHTML=Object.keys(totals).map(k=>`<div class="stats-card"><div class="stats-icon">${STAT_EVENT_ICONS[k]}</div><div class="stats-label">${STAT_EVENT_LABELS[k]}</div><div class="stats-value">${totals[k].toLocaleString("es-CL")}</div></div>`).join("");
+ const days=[]; const now=new Date(); now.setHours(0,0,0,0);
+ for(let i=13;i>=0;i--){const d=new Date(now);d.setDate(now.getDate()-i);days.push({key:dateKeyLocal(d),date:d,page_view:0,menu_view:0,order:0,reservation:0,whatsapp_click:0,location_click:0});}
+ const map=new Map(days.map(d=>[d.key,d]));
+ rows.forEach(r=>{const d=map.get(dateKeyLocal(r.created_at));if(d&&d[r.event_type]!==undefined)d[r.event_type]++;});
+ const max=Math.max(1,...days.map(d=>Math.max(d.page_view,d.menu_view)));
+ $("statsChart").innerHTML=days.map(d=>`<div class="stats-day"><div class="stats-bars" title="${formatStatDate(d.date)} · Visitas: ${d.page_view} · Menú: ${d.menu_view}"><div class="stats-bar" style="height:${Math.max(2,(d.page_view/max)*100)}%"></div><div class="stats-bar menu" style="height:${Math.max(2,(d.menu_view/max)*100)}%"></div></div><div class="stats-day-total">${d.page_view+d.menu_view}</div><div class="stats-day-label">${formatStatDate(d.date)}</div></div>`).join("")+`<div class="stats-legend"><span><i class="stats-dot"></i>Visitas</span><span><i class="stats-dot menu"></i>Vistas del menú</span></div>`;
+ $("statsTableBody").innerHTML=days.slice().reverse().map(d=>`<tr><td>${d.date.toLocaleDateString("es-CL",{weekday:"short",day:"2-digit",month:"2-digit"})}</td><td>${d.page_view}</td><td>${d.menu_view}</td><td>${d.order}</td><td>${d.reservation}</td><td>${d.whatsapp_click}</td><td>${d.location_click}</td></tr>`).join("");
+ msg.textContent=`Mostrando actividad de los últimos 30 días. Total de eventos registrados: ${rows.length.toLocaleString("es-CL")}.`;
+}
 
 async function loadAll(){
  const q=await db.from("site_content").select("content").eq("id","main").single();
@@ -803,6 +860,7 @@ window.changeOrderStatus=async(id,status)=>{
 
 $("refreshOrders").onclick=renderOrders;
 $("enableNotifications").onclick=enableBrowserNotifications;
+if($("refreshStats"))$("refreshStats").onclick=renderStats;
 updateNotifyUI();
 
 async function renderReservations(){
@@ -867,6 +925,7 @@ function activateAdminTab(tab){
  document.querySelectorAll(".admin-section").forEach(s=>s.classList.toggle("active",s.dataset.section===tab));
  if(tab==="orders") renderOrders();
  if(tab==="reservations") renderReservations();
+ if(tab==="stats") renderStats();
  window.scrollTo({top:0,behavior:"smooth"});
 }
 document.querySelectorAll(".admin-tab").forEach(btn=>btn.addEventListener("click",()=>activateAdminTab(btn.dataset.tab)));
