@@ -213,6 +213,28 @@ small{color:#667}.hidden{display:none}
  </div>
 
  <div class="card" style="margin-top:18px;background:#fbfefe">
+  <h3>Datos de transferencia</h3>
+  <p><small>Estos datos aparecerán automáticamente al cliente cuando seleccione <b>Transferencia</b>. Puede modificarlos cuando cambie de banco o cuenta.</small></p>
+  <div class="grid">
+   <label>Nombre / Razón social<input id="s_transfer_holder"></label>
+   <label>RUT<input id="s_transfer_rut"></label>
+   <label>Correo electrónico<input id="s_transfer_email" type="email"></label>
+  </div>
+  <div style="margin-top:14px;font-weight:800;color:#174f54">Cuenta bancaria 1</div>
+  <div class="grid">
+   <label>Banco<input id="s_transfer_bank1"></label>
+   <label>Tipo de cuenta<input id="s_transfer_type1"></label>
+   <label>Número de cuenta<input id="s_transfer_number1"></label>
+  </div>
+  <div style="margin-top:14px;font-weight:800;color:#174f54">Cuenta bancaria 2</div>
+  <div class="grid">
+   <label>Banco<input id="s_transfer_bank2"></label>
+   <label>Tipo de cuenta<input id="s_transfer_type2"></label>
+   <label>Número de cuenta<input id="s_transfer_number2"></label>
+  </div>
+ </div>
+
+ <div class="card" style="margin-top:18px;background:#fbfefe">
   <h3>Imágenes de la página</h3>
   <p><small>Puede cambiar la foto de portada de la fachada y la marca de agua.</small></p>
   <div class="grid">
@@ -445,6 +467,16 @@ async function loadAll(){
   google_reviews:"s_reviews",wifi_name:"s_wifi",wifi_password:"s_wifi_pass",logo:"s_logo"
  };
  Object.keys(map).forEach(k=>$(map[k]).value=s[k]||"");
+ const transfer=s.transfer_details||{};
+ $("s_transfer_holder").value=transfer.holder||"PEREZ PEREZ LIMITADA";
+ $("s_transfer_rut").value=transfer.rut||"77.206.193-5";
+ $("s_transfer_email").value=transfer.email||"Perezperezlimitada@gmail.com";
+ $("s_transfer_bank1").value=transfer.account1?.bank||"BANCO ITAU";
+ $("s_transfer_type1").value=transfer.account1?.type||"Cuenta corriente";
+ $("s_transfer_number1").value=transfer.account1?.number||"0230730332";
+ $("s_transfer_bank2").value=transfer.account2?.bank||"BANCO DE CHILE";
+ $("s_transfer_type2").value=transfer.account2?.type||"Cuenta corriente";
+ $("s_transfer_number2").value=transfer.account2?.number||"002081009308";
  setImagePreview("heroPreview",s.hero_image);
  setImagePreview("watermarkPreview",s.watermark_image);
  renderHoursEditor(s.hours_by_day||null);
@@ -497,6 +529,13 @@ $("saveSettings").onclick=async()=>{
   wifi_name:$("s_wifi").value,
   wifi_password:$("s_wifi_pass").value,
   logo:$("s_logo").value,
+  transfer_details:{
+   holder:$("s_transfer_holder").value.trim(),
+   rut:$("s_transfer_rut").value.trim(),
+   email:$("s_transfer_email").value.trim(),
+   account1:{bank:$("s_transfer_bank1").value.trim(),type:$("s_transfer_type1").value.trim(),number:$("s_transfer_number1").value.trim()},
+   account2:{bank:$("s_transfer_bank2").value.trim(),type:$("s_transfer_type2").value.trim(),number:$("s_transfer_number2").value.trim()}
+  },
   hero_image:heroUrl||previous.hero_image||"",
   watermark_image:watermarkUrl||previous.watermark_image||"",
   hours_by_day:collectHours(),
@@ -847,11 +886,6 @@ window.sendWhatsAppConfirmation=(id)=>{
  const o=ordersCache.find(x=>String(x.id)===String(id));
  if(!o){alert("No se encontró el pedido.");return}
  if(!o.phone){alert("Este pedido no tiene teléfono registrado.");return}
-
- // Para retiro mostramos el tiempo estimado antes de abrir WhatsApp.
- if(o.fulfillment_type==="retiro"){
-  alert("INFORMACIÓN DE RETIRO\n\nLas preparaciones demoran aproximadamente entre 25 y 30 minutos.\n\nEste tiempo es estimado y puede variar según la cantidad de pedidos del momento.");
- }
 
  const number=`MP${String(o.online_order_number).padStart(4,"0")}`;
  const total=money(o.total||0);
