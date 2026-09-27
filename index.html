@@ -161,6 +161,28 @@ footer{background:var(--dark);color:#fff;padding:32px 18px;text-align:center;mar
 .checkout-success{color:#087b70;background:#edf9f7;border-radius:12px;padding:12px;margin-top:10px;font-weight:800}
 .payment-help{font-size:.8rem;color:var(--muted);margin-top:5px;line-height:1.4}
 @media(max-width:600px){.checkout-box{border-radius:20px;max-height:95vh}.checkout-head{padding:18px}.checkout-body{padding:17px}.checkout-form,.delivery-choice{grid-template-columns:1fr}.checkout-full{grid-column:auto}.location-row{align-items:stretch;flex-direction:column}.location-btn{width:100%}}
+
+.pickup-notice-backdrop{
+  position:fixed;inset:0;z-index:10050;
+  display:flex;align-items:center;justify-content:center;
+  padding:20px;background:rgba(4,35,42,.58);
+  backdrop-filter:blur(4px);
+}
+.pickup-notice-box{
+  width:min(440px,100%);background:#fff;border-radius:20px;
+  padding:24px;box-shadow:0 20px 60px rgba(0,0,0,.22);
+  text-align:center;color:#173033;
+}
+.pickup-notice-icon{font-size:2rem;margin-bottom:6px}
+.pickup-notice-box h3{margin:0 0 12px;color:var(--d,#083f43);font-size:1.25rem}
+.pickup-notice-box p{margin:8px 0;line-height:1.5}
+.pickup-notice-small{font-size:.88rem;color:#667779}
+.pickup-notice-actions{display:flex;gap:9px;justify-content:center;flex-wrap:wrap;margin-top:20px}
+.pickup-notice-actions .btn{min-width:150px}
+@media(max-width:520px){
+  .pickup-notice-actions{flex-direction:column-reverse}
+  .pickup-notice-actions .btn{width:100%}
+}
 </style>
 <style id="hero-full-width-final">
 html, body {
@@ -726,6 +748,43 @@ document.getElementById("locationBtn").addEventListener("click",()=>{
     status.textContent="Ubicación guardada para este pedido.";
   },()=>{status.textContent="No pudimos obtener tu ubicación. Puedes continuar ingresando la dirección.";},{enableHighAccuracy:true,timeout:10000,maximumAge:60000});
 });
+
+function showPickupPreparationNotice(){
+  return new Promise(resolve=>{
+    const existing=document.getElementById("pickupNoticeModal");
+    if(existing) existing.remove();
+
+    const modal=document.createElement("div");
+    modal.id="pickupNoticeModal";
+    modal.innerHTML=`
+      <div class="pickup-notice-backdrop" role="presentation">
+        <div class="pickup-notice-box" role="dialog" aria-modal="true" aria-labelledby="pickupNoticeTitle">
+          <div class="pickup-notice-icon">🍽️</div>
+          <h3 id="pickupNoticeTitle">Información de retiro</h3>
+          <p>Las preparaciones demoran aproximadamente entre <strong>25 y 30 minutos</strong>.</p>
+          <p class="pickup-notice-small">Este tiempo es estimado y puede variar según la cantidad de pedidos del momento.</p>
+          <div class="pickup-notice-actions">
+            <button type="button" class="btn alt" id="pickupNoticeCancel">Volver</button>
+            <button type="button" class="btn" id="pickupNoticeContinue">Entendido, enviar pedido</button>
+          </div>
+        </div>
+      </div>`;
+    document.body.appendChild(modal);
+
+    const close=value=>{
+      modal.remove();
+      document.body.style.overflow="";
+      resolve(value);
+    };
+
+    document.getElementById("pickupNoticeCancel").onclick=()=>close(false);
+    document.getElementById("pickupNoticeContinue").onclick=()=>close(true);
+    modal.querySelector(".pickup-notice-backdrop").addEventListener("click",e=>{
+      if(e.target.classList.contains("pickup-notice-backdrop")) close(false);
+    });
+  });
+}
+
 document.getElementById("checkoutForm").addEventListener("submit",async e=>{
   e.preventDefault();
   if(!orderCart.length)return;
@@ -741,6 +800,13 @@ document.getElementById("checkoutForm").addEventListener("submit",async e=>{
   if(fulfillment==="delivery"&&!['efectivo','transferencia'].includes(payment)){
     const er=document.getElementById("checkoutError");er.textContent="Para delivery solo aceptamos efectivo o transferencia.";er.hidden=false;return;
   }
+  // Solo para RETIRO: antes de registrar el pedido y abrir WhatsApp,
+  // informamos al cliente que la preparación demora aproximadamente 25–30 minutos.
+  if(fulfillment==="retiro"){
+    const accepted=await showPickupPreparationNotice();
+    if(!accepted)return;
+  }
+
   const submit=document.getElementById("checkoutSubmit");
   const errorBox=document.getElementById("checkoutError");
   const successBox=document.getElementById("checkoutSuccess");
@@ -787,7 +853,7 @@ document.getElementById("checkoutForm").addEventListener("submit",async e=>{
     if(f.get("reference"))text+=`*Referencia:* ${String(f.get("reference")).trim()}\n`;
     if(customerLocation.latitude)text+=`*Ubicación:* https://maps.google.com/?q=${customerLocation.latitude},${customerLocation.longitude}\n`;
   }
-  if(fulfillment==="retiro"&&f.get("pickup_time"))text+=`*Hora aproximada:* ${f.get("pickup_time")}\n`;
+  if(fulfillment==="retiro"){if(f.get("pickup_time"))text+=`*Hora aproximada:* ${f.get("pickup_time")}\n`;text+=`*Tiempo estimado de preparación: 25 a 30 minutos aproximadamente*\n`;}
   text+=`\n*PEDIDO*\n${itemLines}\n\n*TOTAL:* ${money(total)}\n*Forma de pago:* ${paymentLabel}`;
   if(f.get("notes"))text+=`\n*Observaciones:* ${String(f.get("notes")).trim()}`;
   text+=`\n\nPor favor confirmar recepción del pedido.`;
