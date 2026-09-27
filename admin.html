@@ -616,6 +616,21 @@ const ORDER_STATUS_LABELS={
  cancelado:"Cancelado"
 };
 
+// Los pedidos para retiro tienen un flujo distinto al delivery.
+function getOrderStatusLabels(order){
+ if(order?.fulfillment_type==="retiro"){
+  return {
+   recibido:"Recibido",
+   aceptado:"Pedido confirmado",
+   preparacion:"En preparación",
+   listo:"Listo para retirar",
+   entregado:"Pedido retirado en local",
+   cancelado:"Cancelado"
+  };
+ }
+ return ORDER_STATUS_LABELS;
+}
+
 function formatOrderDate(value){
  const d=new Date(value);
  if(Number.isNaN(d.getTime())) return value||"";
@@ -796,7 +811,7 @@ async function renderOrders(){
        <div style="text-align:right">
          <div class="order-total">${money(o.total||0)}</div>
          <select class="order-status" onchange="changeOrderStatus('${o.id}',this.value)">
-           ${Object.entries(ORDER_STATUS_LABELS).map(([value,label])=>`<option value="${value}" ${o.status===value?"selected":""}>${label}</option>`).join("")}
+           ${Object.entries(getOrderStatusLabels(o)).map(([value,label])=>`<option value="${value}" ${o.status===value?"selected":""}>${label}</option>`).join("")}
          </select>
        </div>
      </div>
@@ -832,6 +847,12 @@ window.sendWhatsAppConfirmation=(id)=>{
  const o=ordersCache.find(x=>String(x.id)===String(id));
  if(!o){alert("No se encontró el pedido.");return}
  if(!o.phone){alert("Este pedido no tiene teléfono registrado.");return}
+
+ // Para retiro mostramos el tiempo estimado antes de abrir WhatsApp.
+ if(o.fulfillment_type==="retiro"){
+  alert("INFORMACIÓN DE RETIRO\n\nLas preparaciones demoran aproximadamente entre 25 y 30 minutos.\n\nEste tiempo es estimado y puede variar según la cantidad de pedidos del momento.");
+ }
+
  const number=`MP${String(o.online_order_number).padStart(4,"0")}`;
  const total=money(o.total||0);
  const type=o.fulfillment_type==="delivery"?"Delivery":"Retiro en restaurante";
@@ -839,7 +860,7 @@ window.sendWhatsAppConfirmation=(id)=>{
    const addon=x.addon?`\n   - Agregado: *${x.addon}*${Number(x.addon_price)?` — *${money(Number(x.addon_price))}*`:""}`:"";
    return `• ${Number(x.qty)||0} × *${x.name||"Producto"}* — *${money(Number(x.line_total)||0)}*${addon}`;
  }).join("\n"):"";
- const message=`*MORROS DE PICHILEMU — CONFIRMACIÓN DE PEDIDO*\n\n*Pedido: #${number}*\nHola *${o.customer_name||""}*, tu pedido ha sido aceptado y comenzaremos a prepararlo.\n\n${items}\n\n*TOTAL: ${total}*\n*Modalidad: ${type}*${o.fulfillment_type==="delivery"&&o.address?`\n*Dirección: ${o.address}*`:""}${o.fulfillment_type==="retiro"&&o.pickup_time?`\n*Hora de retiro: ${o.pickup_time}*`:""}\n\nGracias por preferir *Morros de Pichilemu*.`;
+ const message=`*MORROS DE PICHILEMU — CONFIRMACIÓN DE PEDIDO*\n\n*Pedido: #${number}*\nHola *${o.customer_name||""}*, tu pedido ha sido aceptado y comenzaremos a prepararlo.\n\n${items}\n\n*TOTAL: ${total}*\n*Modalidad: ${type}*${o.fulfillment_type==="delivery"&&o.address?`\n*Dirección: ${o.address}*`:""}${o.fulfillment_type==="retiro"&&o.pickup_time?`\n*Hora de retiro: ${o.pickup_time}*\n*Tiempo estimado de preparación: 25 a 30 minutos aproximadamente*`:""}${o.fulfillment_type==="delivery"?`\n*Tiempo estimado de entrega: te lo confirmaremos por este medio.*`:""}\n\nGracias por preferir *Morros de Pichilemu*.`;
  let phone=String(o.phone).replace(/\D/g,"");
  if(phone.startsWith("0")) phone="56"+phone.slice(1);
  else if(phone.startsWith("9")) phone="56"+phone;
