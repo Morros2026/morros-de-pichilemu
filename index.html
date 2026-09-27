@@ -162,6 +162,21 @@ footer{background:var(--dark);color:#fff;padding:32px 18px;text-align:center;mar
 .payment-help{font-size:.8rem;color:var(--muted);margin-top:5px;line-height:1.4}
 @media(max-width:600px){.checkout-box{border-radius:20px;max-height:95vh}.checkout-head{padding:18px}.checkout-body{padding:17px}.checkout-form,.delivery-choice{grid-template-columns:1fr}.checkout-full{grid-column:auto}.location-row{align-items:stretch;flex-direction:column}.location-btn{width:100%}}
 
+/* Datos de transferencia */
+.transfer-notice-backdrop{position:fixed;inset:0;background:rgba(3,24,29,.68);z-index:10020;display:flex;align-items:center;justify-content:center;padding:18px}
+.transfer-notice-box{width:min(560px,100%);max-height:min(88vh,760px);overflow:auto;background:#fff;border-radius:22px;box-shadow:0 24px 70px rgba(0,0,0,.28);padding:26px}
+.transfer-notice-head{text-align:center;margin-bottom:18px}
+.transfer-notice-head h3{margin:0 0 7px;color:#164f54;font-size:25px}
+.transfer-notice-head p{margin:0;color:#667779}
+.transfer-main{background:#f4faf8;border:1px solid #d9ebe5;border-radius:16px;padding:16px;margin-top:12px}
+.transfer-line{display:flex;gap:8px;align-items:flex-start;padding:6px 0;color:#243b3d}
+.transfer-label{min-width:132px;color:#667779}
+.transfer-value{font-weight:800;color:#173f43;word-break:break-word}
+.transfer-bank{background:#fff;border:1px solid #dfe9e6;border-radius:14px;padding:14px;margin-top:12px}
+.transfer-bank-title{font-size:17px;font-weight:900;color:#164f54;margin-bottom:5px}
+.transfer-notice-actions{display:flex;gap:10px;justify-content:flex-end;margin-top:18px}
+@media(max-width:600px){.transfer-notice-box{padding:20px;border-radius:18px}.transfer-line{display:block}.transfer-label{display:block;margin-bottom:2px}.transfer-notice-actions{flex-direction:column}.transfer-notice-actions button{width:100%}}
+
 .pickup-notice-backdrop{
   position:fixed;inset:0;z-index:10050;
   display:flex;align-items:center;justify-content:center;
@@ -592,7 +607,7 @@ const SUPABASE_KEY="sb_publishable_XkqdpRz6lLQFjscnDNrDZw_PMRBQhqC";
 const db=supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
 async function trackAnalytics(eventType,metadata={}){try{await db.from("site_analytics").insert({event_type:eventType,metadata})}catch(e){console.warn("No se pudo registrar estadística",e)}}
 trackAnalytics("page_view",{path:location.pathname});
-let settings={whatsapp:"56963526045",wifi_password:"Restaurantelosmorros250.",instagram:"https://www.instagram.com/losmorros.restaurante/",hours_by_day:null,hours_note:""};
+let settings={whatsapp:"56963526045",wifi_password:"Restaurantelosmorros250.",instagram:"https://www.instagram.com/losmorros.restaurante/",hours_by_day:null,hours_note:"",transfer_details:{holder:"PEREZ PEREZ LIMITADA",rut:"77.206.193-5",email:"Perezperezlimitada@gmail.com",account1:{bank:"BANCO ITAU",type:"Cuenta corriente",number:"0230730332"},account2:{bank:"BANCO DE CHILE",type:"Cuenta corriente",number:"002081009308"}}};
 const money=n=>new Intl.NumberFormat("es-CL",{style:"currency",currency:"CLP",maximumFractionDigits:0}).format(n);
 function waLink(text="Hola, quiero hacer una reserva en Restaurante Morros de Pichilemu."){return "https://wa.me/"+settings.whatsapp+"?text="+encodeURIComponent(text)}
 async function loadSettings(){
@@ -722,7 +737,7 @@ function updateFulfillmentUI(){
   paymentHelp.textContent=type==="delivery"
     ? "Para delivery aceptamos únicamente efectivo o transferencia."
     : payment.value==="transferencia"
-      ? "Te enviaremos los datos de transferencia por WhatsApp para confirmar el pedido."
+      ? "Al seleccionar transferencia podrás revisar los datos bancarios antes de enviar tu pedido."
       : "";
 }
 document.getElementById("cartCheckout").addEventListener("click",openCheckout);
@@ -734,7 +749,7 @@ document.querySelector('select[name="payment_method"]').addEventListener("change
   document.getElementById("paymentHelp").textContent=type==="delivery"
     ? "Para delivery aceptamos únicamente efectivo o transferencia."
     : e.target.value==="transferencia"
-      ? "Te enviaremos los datos de transferencia por WhatsApp para confirmar el pedido."
+      ? "Al seleccionar transferencia podrás revisar los datos bancarios antes de enviar tu pedido."
       : "";
 });
 let customerLocation={latitude:null,longitude:null};
@@ -748,6 +763,25 @@ document.getElementById("locationBtn").addEventListener("click",()=>{
     status.textContent="Ubicación guardada para este pedido.";
   },()=>{status.textContent="No pudimos obtener tu ubicación. Puedes continuar ingresando la dirección.";},{enableHighAccuracy:true,timeout:10000,maximumAge:60000});
 });
+
+function showTransferDetailsNotice(){
+  return new Promise(resolve=>{
+    const existing=document.getElementById("transferNoticeModal");
+    if(existing) existing.remove();
+    const t=settings.transfer_details||{};
+    const a1=t.account1||{};
+    const a2=t.account2||{};
+    const accountHtml=(a)=>a.bank||a.type||a.number?`<div class="transfer-bank"><div class="transfer-bank-title">${a.bank||"Banco"}</div><div class="transfer-line"><span class="transfer-label">Tipo de cuenta</span><span class="transfer-value">${a.type||""}</span></div><div class="transfer-line"><span class="transfer-label">N° de cuenta</span><span class="transfer-value">${a.number||""}</span></div></div>`:"";
+    const modal=document.createElement("div");
+    modal.id="transferNoticeModal";
+    modal.innerHTML=`<div class="transfer-notice-backdrop" role="presentation"><div class="transfer-notice-box" role="dialog" aria-modal="true" aria-labelledby="transferNoticeTitle"><div class="transfer-notice-head"><h3 id="transferNoticeTitle">Datos para transferencia</h3><p>Revisa los datos antes de realizar tu transferencia.</p></div><div class="transfer-main"><div class="transfer-line"><span class="transfer-label">Nombre</span><span class="transfer-value">${t.holder||""}</span></div><div class="transfer-line"><span class="transfer-label">RUT</span><span class="transfer-value">${t.rut||""}</span></div><div class="transfer-line"><span class="transfer-label">Correo</span><span class="transfer-value">${t.email||""}</span></div>${accountHtml(a1)}${accountHtml(a2)}</div><div class="transfer-notice-actions"><button type="button" class="btn alt" id="transferNoticeCancel">Volver</button><button type="button" class="btn" id="transferNoticeContinue">Entendido, continuar</button></div></div></div>`;
+    document.body.appendChild(modal);
+    const close=value=>{modal.remove();document.body.style.overflow="";resolve(value)};
+    document.getElementById("transferNoticeCancel").onclick=()=>close(false);
+    document.getElementById("transferNoticeContinue").onclick=()=>close(true);
+    modal.querySelector(".transfer-notice-backdrop").addEventListener("click",e=>{if(e.target.classList.contains("transfer-notice-backdrop"))close(false)});
+  });
+}
 
 function showPickupPreparationNotice(){
   return new Promise(resolve=>{
@@ -800,6 +834,12 @@ document.getElementById("checkoutForm").addEventListener("submit",async e=>{
   if(fulfillment==="delivery"&&!['efectivo','transferencia'].includes(payment)){
     const er=document.getElementById("checkoutError");er.textContent="Para delivery solo aceptamos efectivo o transferencia.";er.hidden=false;return;
   }
+  // Si el cliente paga por transferencia, primero mostramos los datos bancarios configurados desde el administrador.
+  if(payment==="transferencia"){
+    const acceptedTransfer=await showTransferDetailsNotice();
+    if(!acceptedTransfer)return;
+  }
+
   // Solo para RETIRO: antes de registrar el pedido y abrir WhatsApp,
   // informamos al cliente que la preparación demora aproximadamente 25–30 minutos.
   if(fulfillment==="retiro"){
