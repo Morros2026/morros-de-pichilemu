@@ -985,20 +985,11 @@ async function renderReservations(){
   return;
  }
  const rows=(data||[]).sort((a,b)=>{
-  const aPending=String(a.status||"Pendiente")==="Pendiente"?0:1;
-  const bPending=String(b.status||"Pendiente")==="Pendiente"?0:1;
-  if(aPending!==bPending) return aPending-bPending;
-
-  // Las reservas pendientes más nuevas quedan primero para que nunca pasen desapercibidas.
-  if(aPending===0){
-   const ac=new Date(a.created_at||0).getTime();
-   const bc=new Date(b.created_at||0).getTime();
-   return bc-ac;
-  }
-
-  const ad=`${a.reservation_date||""}T${a.reservation_time||""}`;
-  const bd=`${b.reservation_date||""}T${b.reservation_time||""}`;
-  return ad.localeCompare(bd);
+  // Orden fijo por fecha de creación: las reservas nuevas siempre arriba
+  // y las antiguas siempre abajo, sin importar si están pendientes, confirmadas o rechazadas.
+  const ac=new Date(a.created_at||0).getTime();
+  const bc=new Date(b.created_at||0).getTime();
+  return bc-ac;
  });
  reservationsCache=rows;
  const currentIds=new Set(rows.map(r=>String(r.id)));
