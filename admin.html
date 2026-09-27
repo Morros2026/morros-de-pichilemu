@@ -863,11 +863,100 @@ $("enableNotifications").onclick=enableBrowserNotifications;
 if($("refreshStats"))$("refreshStats").onclick=renderStats;
 updateNotifyUI();
 
+let reservationsCache=[];
+let lastKnownReservationIds=new Set();
+let firstReservationsLoad=true;
+const activeReservationAlerts=new Map();
+
+function reservationAlertSound(){
+ if(!notificationReady || !audioContext) return;
+ try{
+  const now=audioContext.currentTime;
+  [0,0.22,0.44,0.66].forEach((offset,i)=>{
+   const osc=audioContext.createOscillator();
+   const gain=audioContext.createGain();
+   osc.type="sine";
+   osc.frequency.value=[740,988,1175,988][i];
+   gain.gain.setValueAtTime(0.0001,now+offset);
+   gain.gain.exponentialRampToValueAtTime(0.30,now+offset+0.025);
+   gain.gain.exponentialRampToValueAtTime(0.0001,now+offset+0.22);
+   osc.connect(gain);
+   gain.connect(audioContext.destination);
+   osc.start(now+offset);
+   osc.stop(now+offset+0.23);
+  });
+ }catch(e){console.warn("No se pudo reproducir aviso de reserva",e)}
+}
+
+function notifyNewReservation(reservation){
+ const key=String(reservation.id);
+ reservationAlertSound();
+ if("Notification" in window && Notification.permission==="granted"){
+  try{
+   new Notification("Nueva reserva · Morros de Pichilemu",{
+    body:`${reservation.name||"Cliente"} · ${reservation.people||0} personas · ${String(reservation.reservation_time||"").slice(0,5)} hrs`,
+    tag:`reservation-${key}`
+   });
+  }catch(e){}
+ }
+ if(activeReservationAlerts.has(key)) clearInterval(activeReservationAlerts.get(key));
+ const reminder=setInterval(()=>{
+  const current=reservationsCache.find(x=>String(x.id)===key);
+  if(!current || String(current.status||"Pendiente")!=="Pendiente"){
+   clearInterval(reminder);
+   activeReservationAlerts.delete(key);
+   return;
+  }
+  reservationAlertSound();
+  if("Notification" in window && Notification.permission==="granted"){
+   try{
+    new Notification("Reserva pendiente · Morros de Pichilemu",{
+     body:`${current.name||"Cliente"} · ${current.people||0} personas · ${String(current.reservation_time||"").slice(0,5)} hrs`,
+     tag:`reservation-reminder-${key}`
+    });
+   }catch(e){}
+  }
+ },30000);
+ activeReservationAlerts.set(key,reminder);
+}
+
 async function renderReservations(){
- const {data}=await db.from("reservations").select("*")
+ const {data,error}=await db.from("reservations").select("*")
   .order("reservation_date",{ascending:true})
   .order("reservation_time",{ascending:true});
- const rows=data||[];
+ if(error){
+  console.error(error);
+  $("reservations").innerHTML='<div class="reservation-empty">No se pudieron cargar las reservas.</div>';
+  return;
+ }
+ const rows=(data||[]).sort((a,b)=>{
+  const aPending=String(a.status||"Pendiente")==="Pendiente"?0:1;
+  const bPending=String(b.status||"Pendiente")==="Pendiente"?0:1;
+  if(aPending!==bPending) return aPending-bPending;
+
+  // Las reservas pendientes más nuevas quedan primero para que nunca pasen desapercibidas.
+  if(aPending===0){
+   const ac=new Date(a.created_at||0).getTime();
+   const bc=new Date(b.created_at||0).getTime();
+   return bc-ac;
+  }
+
+  const ad=`${a.reservation_date||""}T${a.reservation_time||""}`;
+  const bd=`${b.reservation_date||""}T${b.reservation_time||""}`;
+  return ad.localeCompare(bd);
+ });
+ reservationsCache=rows;
+ const currentIds=new Set(rows.map(r=>String(r.id)));
+ if(!firstReservationsLoad){
+  rows.filter(r=>!lastKnownReservationIds.has(String(r.id)) && String(r.status||"Pendiente")==="Pendiente").forEach(notifyNewReservation);
+ }
+ lastKnownReservationIds=currentIds;
+ firstReservationsLoad=false;
+ const pendingReservations=rows.filter(r=>String(r.status||"Pendiente")==="Pendiente");
+ const reservationTab=document.querySelector('.admin-tab[data-tab="reservations"]');
+ if(reservationTab){
+  reservationTab.innerHTML=pendingReservations.length?`Reservas <span class="orders-badge" style="padding:3px 7px;font-size:.72rem;margin-left:4px">${pendingReservations.length}</span>`:'Reservas';
+ }
  if(!rows.length){
   $("reservations").innerHTML='<div class="reservation-empty">No hay reservas registradas.</div>';
   return;
@@ -884,7 +973,7 @@ async function renderReservations(){
   else if(phone.startsWith("9")) phone="56"+phone;
   if(!phone.startsWith("56")) return "#";
   const status=String(r.status||"Pendiente");
-  const message=`*MORROS DE PICHILEMU — CONFIRMACIÓN DE RESERVA*\n\nHola *${r.name||""}*, queremos confirmar los datos de tu reserva:\n\n*Fecha: ${fmtDate(r.reservation_date)}*\n*Hora: ${String(r.reservation_time||"").slice(0,5)} hrs*\n*Personas: ${r.people||""}*${r.reason?`\nMotivo: *${r.reason}*`:""}${r.observations?`\nObservaciones: ${r.observations}`:""}\n\n¡Te esperamos en *Morros de Pichilemu*!\nPor favor responde este mensaje para confirmar tu reserva.`;
+  const message=`*MORROS DE PICHILEMU — CONFIRMACIÓN DE RESERVA*\n\nHola *${r.name||""}*, tu reserva en *Restaurante Morros de Pichilemu* ha sido confirmada.\n\n*Fecha: ${fmtDate(r.reservation_date)}*\n*Hora: ${String(r.reservation_time||"").slice(0,5)} hrs*\n*Personas: ${r.people||""}*${r.reason?`\nMotivo: *${r.reason}*`:""}${r.observations?`\nObservaciones: ${r.observations}`:""}\n\n¡Te esperamos en *Morros de Pichilemu*!`;
   return `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
  };
  $("reservations").innerHTML=rows.map(r=>{
@@ -916,7 +1005,14 @@ async function renderReservations(){
  }).join("");
 }
 window.statusRes=async(id,status)=>{
- await db.from("reservations").update({status}).eq("id",id);
+ const {error}=await db.from("reservations").update({status}).eq("id",id);
+ if(error){alert("No se pudo actualizar la reserva: "+error.message);return}
+ const key=String(id);
+ if(activeReservationAlerts.has(key)){
+  clearInterval(activeReservationAlerts.get(key));
+  activeReservationAlerts.delete(key);
+ }
+ await renderReservations();
 };
 
 
@@ -941,7 +1037,10 @@ db.auth.onAuthStateChange((event,session)=>{
 
 
 setInterval(()=>{
- if(!$("panel").classList.contains("hidden")) renderOrders();
+ if(!$("panel").classList.contains("hidden")){
+  renderOrders();
+  renderReservations();
+ }
 },10000);
 
 db.auth.getSession().then(({data})=>{
