@@ -140,7 +140,6 @@ small{color:#667}.hidden{display:none}
  .reservation-actions>*{width:100%}
  .reservation-wa{text-align:center}
 }
-.image-preview{display:block;width:100%;max-width:420px;height:150px;object-fit:cover;border:1px solid #dfe8e5;border-radius:14px;margin-top:10px;background:#f3f7f6}.watermark-preview{object-fit:contain;background:#fff}.image-preview[hidden]{display:none}#heroUploadMsg,#watermarkUploadMsg{display:block;margin-top:7px;color:#667779}
 
 .stats-cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:14px 0}
 .stats-card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:14px;min-height:94px}
@@ -234,22 +233,7 @@ small{color:#667}.hidden{display:none}
   </div>
  </div>
 
- <div class="card" style="margin-top:18px;background:#fbfefe">
-  <h3>Imágenes de la página</h3>
-  <p><small>Puede cambiar la foto de portada de la fachada y la marca de agua.</small></p>
-  <div class="grid">
-   <div>
-    <label>Foto de portada / fachada<input id="s_hero_file" type="file" accept="image/*"></label>
-    <img id="heroPreview" class="image-preview" alt="Vista previa de la foto de portada" hidden>
-    <small id="heroUploadMsg"></small>
-   </div>
-   <div>
-    <label>Marca de agua<input id="s_watermark_file" type="file" accept="image/*"></label>
-    <img id="watermarkPreview" class="image-preview watermark-preview" alt="Vista previa de la marca de agua" hidden>
-    <small id="watermarkUploadMsg"></small>
-   </div>
-  </div>
- </div>
+
 
  <div class="card" style="margin-top:18px;background:#fbfefe">
   <h3>Horarios por día</h3>
@@ -477,8 +461,6 @@ async function loadAll(){
  $("s_transfer_bank2").value=transfer.account2?.bank||"BANCO DE CHILE";
  $("s_transfer_type2").value=transfer.account2?.type||"Cuenta corriente";
  $("s_transfer_number2").value=transfer.account2?.number||"002081009308";
- setImagePreview("heroPreview",s.hero_image);
- setImagePreview("watermarkPreview",s.watermark_image);
  renderHoursEditor(s.hours_by_day||null);
  $("s_hours_note").value=s.hours_note||"";
 
@@ -489,34 +471,9 @@ async function loadAll(){
  renderCats();renderItems();renderOrders();renderReservations();
 }
 
-function setImagePreview(id,url){
- const img=$(id);
- if(!img)return;
- if(url){img.src=url;img.hidden=false}else{img.removeAttribute("src");img.hidden=true}
-}
-
-async function uploadSiteImage(inputId,msgId,previewId,prefix){
- const input=$(inputId),msg=$(msgId);
- const file=input?.files?.[0];
- if(!file)return null;
- if(!file.type.startsWith("image/")){msg.textContent="Selecciona una imagen válida.";return null}
- if(file.size>8*1024*1024){msg.textContent="La imagen debe pesar menos de 8 MB.";return null}
- msg.textContent="Subiendo imagen...";
- const ext=(file.name.split(".").pop()||"jpg").toLowerCase().replace(/[^a-z0-9]/g,"")||"jpg";
- const path=`${prefix}-${Date.now()}.${ext}`;
- const {error}=await db.storage.from("site-images").upload(path,file,{cacheControl:"3600",upsert:false,contentType:file.type});
- if(error){msg.textContent="No se pudo subir la imagen: "+error.message;return null}
- const {data}=db.storage.from("site-images").getPublicUrl(path);
- const url=data?.publicUrl||"";
- if(url){setImagePreview(previewId,url);msg.textContent="Imagen subida correctamente.";return url}
- msg.textContent="La imagen se subió, pero no pudimos obtener su URL.";return null;
-}
-
 $("saveSettings").onclick=async()=>{
  const old=await db.from("site_content").select("content").eq("id","main").single();
  const previous=old.data?.content||{};
- const heroUrl=await uploadSiteImage("s_hero_file","heroUploadMsg","heroPreview","hero_image");
- const watermarkUrl=await uploadSiteImage("s_watermark_file","watermarkUploadMsg","watermarkPreview","watermark_image");
  const content={
   ...previous,
   address:$("s_address").value,
@@ -536,8 +493,6 @@ $("saveSettings").onclick=async()=>{
    account1:{bank:$("s_transfer_bank1").value.trim(),type:$("s_transfer_type1").value.trim(),number:$("s_transfer_number1").value.trim()},
    account2:{bank:$("s_transfer_bank2").value.trim(),type:$("s_transfer_type2").value.trim(),number:$("s_transfer_number2").value.trim()}
   },
-  hero_image:heroUrl||previous.hero_image||"",
-  watermark_image:watermarkUrl||previous.watermark_image||"",
   hours_by_day:collectHours(),
   hours_note:$("s_hours_note").value
  };
